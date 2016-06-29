@@ -8,6 +8,9 @@ module Embulk
 
         def self.transaction(config, &control)
           task = task_from_config(config)
+          unless %w(ga:date ga:dateHour).include?(task["time_series"])
+            raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour' or 'ga:date'")
+          end
           columns_list = Client.new(task).get_columns_list
 
           columns = columns_from_task(task).map do |col_name|

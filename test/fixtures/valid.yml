@@ -1,0 +1,18 @@
+in:
+  type: google_analytics
+  json_keyfile:
+    content: |
+      {
+        "type": "service_account"
+      }
+  view_id: 101111111
+  time_series: "ga:dateHour"
+ 
+  dimensions:
+    - "ga:browser"
+  metrics:
+    - "ga:visits"
+    - "ga:pageviews"
+
+out:
+  type: stdout
