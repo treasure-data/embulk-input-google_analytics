@@ -53,19 +53,24 @@ module Embulk
         def get_profile
           @profile ||=
             begin
-              service = Google::Apis::AnalyticsV3::AnalyticsService.new
-              service.authorization = auth
-
-              Embulk.logger.debug "Fetching profile from API"
-              profile = service.list_profiles("~all", "~all").to_h[:items].find do |prof|
+              profile = get_all_profiles.to_h[:items].find do |prof|
                 prof[:id] == view_id
               end
+
               unless profile
-                raise Embulk::DataError.new("Can't find view_id:#{view_id} profile via Google Analytics API.")
+                raise Embulk::ConfigError.new("Can't find view_id:#{view_id} profile via Google Analytics API.")
               end
 
               profile
             end
+        end
+
+        def get_all_profiles
+          service = Google::Apis::AnalyticsV3::AnalyticsService.new
+          service.authorization = auth
+
+          Embulk.logger.debug "Fetching profile from API"
+          service.list_profiles("~all", "~all")
         end
 
         def time_parse_with_profile_timezone(time_string)
@@ -99,7 +104,6 @@ module Embulk
           # https://developers.google.com/analytics/devguides/reporting/metadata/v3/reference/metadata/columns/list
           service = Google::Apis::AnalyticsV3::AnalyticsService.new
           service.authorization = auth
-          Embulk.logger.debug "Fetching columns info from API"
           service.list_metadata_columns("ga").to_h[:items]
         end
 
@@ -126,17 +130,13 @@ module Embulk
           [query]
         end
 
-        def json_keyfile
-          task["json_keyfile"]
-        end
-
         def view_id
           task["view_id"]
         end
 
         def auth
           Google::Auth::ServiceAccountCredentials.make_creds(
-            json_key_io: StringIO.new(json_keyfile),
+            json_key_io: StringIO.new(task["json_keyfile"]),
             scope: "https://www.googleapis.com/auth/analytics.readonly"
           )
         end
