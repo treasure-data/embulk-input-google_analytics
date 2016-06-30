@@ -99,11 +99,12 @@ module Embulk
               end
 
               test "HH:00:00 time given" do
-                time = Time.parse Time.now.localtime("+09:00").strftime("%Y-%m-%d %H:00:00 +09:00")
+                Time.zone = "America/Los_Angeles"
+                time = Time.zone.parse("2016-06-01 12:00:00").to_time
                 any_instance_of(Client) do |klass|
                   stub(klass).each_report_row do |block|
                     row = {
-                      "ga:dateHour" => time.strftime("%Y%m%d%H JST"),
+                      "ga:dateHour" => time,
                       "ga:browser" => "wget",
                       "ga:visits" => 3,
                       "ga:pageviews" => 4,
@@ -124,11 +125,12 @@ module Embulk
               end
 
               test "00:00:00 time given" do
-                time = Time.parse Time.now.localtime("+09:00").strftime("%Y-%m-%d 00:00:00 +09:00")
+                Time.zone = "America/Los_Angeles"
+                time = Time.zone.parse("2016-06-01 00:00:00").to_time
                 any_instance_of(Client) do |klass|
                   stub(klass).each_report_row do |block|
                     row = {
-                      "ga:date" => time.strftime("%Y%m%d JST"),
+                      "ga:date" => time,
                       "ga:browser" => "wget",
                       "ga:visits" => 3,
                       "ga:pageviews" => 4,
