@@ -8,6 +8,9 @@ module Embulk
 
         def self.transaction(config, &control)
           task = task_from_config(config)
+          unless %w(ga:date ga:dateHour).include?(task["time_series"])
+            raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour' or 'ga:date'")
+          end
           columns_list = Client.new(task).get_columns_list
 
           columns = columns_from_task(task).map do |col_name|
@@ -85,18 +88,9 @@ module Embulk
         def run
           client = Client.new(task, preview?)
           columns = self.class.columns_from_task(task)
-          date_format =
-            case task["time_series"]
-            when "ga:dateHour"
-              "%Y%m%d%H %z"
-            when "ga:date"
-              "%Y%m%d %z"
-            end
 
           client.each_report_row do |row|
             values = row.values_at(*columns)
-            # Always values[0] is a time_series column
-            values[0] = Time.strptime(values.first, date_format)
             page_builder.add values
           end
           page_builder.finish

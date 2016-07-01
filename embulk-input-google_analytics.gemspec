@@ -16,11 +16,15 @@ Gem::Specification.new do |spec|
   spec.add_dependency "httpclient"
   spec.add_dependency "google-api-client", "~> 0.9"
   spec.add_dependency "signet"
-  spec.add_dependency "tzinfo"
+  spec.add_dependency "activesupport"
   # spec.add_dependency "googleauth", "~> 0.4.2"
   # spec.add_dependency "google-api-client", "~> 0.8.6"
   spec.add_development_dependency 'embulk', ['>= 0.8.9']
   spec.add_development_dependency 'bundler', ['>= 1.10.6']
   spec.add_development_dependency 'rake', ['>= 10.0']
+  spec.add_development_dependency 'test-unit'
+  spec.add_development_dependency 'test-unit-rr'
+  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency "codeclimate-test-reporter"
   spec.add_development_dependency "pry"
 end

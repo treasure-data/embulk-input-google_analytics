@@ -1,4 +1,4 @@
-require "tzinfo"
+require "active_support/core_ext/time"
 require "google/apis/analyticsreporting_v4"
 require "google/apis/analytics_v3"
 
@@ -19,8 +19,7 @@ module Embulk
 
         def each_report_row(&block)
           page_token = nil
-          timezone = get_profile_timezone
-          Embulk.logger.info "view_id:#{view_id} timezone has been set as '#{timezone}'"
+          Embulk.logger.info "view_id:#{view_id} timezone has been set as '#{get_profile[:timezone]}'"
 
           loop do
             report = get_reports(page_token).to_h[:reports].first
@@ -37,7 +36,8 @@ module Embulk
               dim = dimensions.zip(row[:dimensions]).to_h
               met = metrics.zip(row[:metrics].first[:values]).to_h
               format_row = dim.merge(met)
-              format_row[task["time_series"]] += " #{timezone}" # we need to know which timezone's time value.
+              time = format_row[task["time_series"]]
+              format_row[task["time_series"]] = time_parse_with_profile_timezone(time)
               block.call format_row
             end
 
@@ -48,6 +48,46 @@ module Embulk
             end
             Embulk.logger.info "Fetching report with page_token: #{page_token}"
           end
+        end
+
+        def get_profile
+          @profile ||=
+            begin
+              profile = get_all_profiles.to_h[:items].find do |prof|
+                prof[:id] == view_id
+              end
+
+              unless profile
+                raise Embulk::ConfigError.new("Can't find view_id:#{view_id} profile via Google Analytics API.")
+              end
+
+              profile
+            end
+        end
+
+        def get_all_profiles
+          service = Google::Apis::AnalyticsV3::AnalyticsService.new
+          service.authorization = auth
+
+          Embulk.logger.debug "Fetching profile from API"
+          service.list_profiles("~all", "~all")
+        end
+
+        def time_parse_with_profile_timezone(time_string)
+          date_format =
+            case task["time_series"]
+            when "ga:dateHour"
+              "%Y%m%d%H"
+            when "ga:date"
+              "%Y%m%d"
+            end
+          parts = Date._strptime(time_string, date_format)
+
+          orig_timezone = Time.zone
+          Time.zone = get_profile[:timezone]
+          Time.zone.local(*parts.values_at(:year, :mon, :mday, :hour)).to_time
+        ensure
+          Time.zone = orig_timezone
         end
 
         def get_reports(page_token = nil)
@@ -64,30 +104,7 @@ module Embulk
           # https://developers.google.com/analytics/devguides/reporting/metadata/v3/reference/metadata/columns/list
           service = Google::Apis::AnalyticsV3::AnalyticsService.new
           service.authorization = auth
-          Embulk.logger.debug "Fetching columns info from API"
           service.list_metadata_columns("ga").to_h[:items]
-        end
-
-        def get_profile_timezone
-          service = Google::Apis::AnalyticsV3::AnalyticsService.new
-          service.authorization = auth
-
-          Embulk.logger.debug "Fetching profile from API"
-          profile = service.list_profiles("~all", "~all").to_h[:items].find do |prof|
-            prof[:id] == view_id
-          end
-          unless profile
-            raise Embulk::DataError.new("Can't find view_id:#{view_id} profile via Google Analytics API.")
-          end
-
-          timezone_abbr(profile[:timezone]) # e.g. PDT, JST, etc
-        end
-
-        def timezone_abbr(zone_name)
-          tz = TZInfo::Timezone.get(zone_name)
-          tz.period_for_utc(Time.now.utc).offset.abbreviation
-        rescue TZInfo::InvalidTimezoneIdentifier => e
-          raise Embulk::DataError.new("'#{zone_name}' is unknown time zone name.")
         end
 
         def build_report_request(page_token = nil)
@@ -113,17 +130,13 @@ module Embulk
           [query]
         end
 
-        def json_keyfile
-          task["json_keyfile"]
-        end
-
         def view_id
           task["view_id"]
         end
 
         def auth
           Google::Auth::ServiceAccountCredentials.make_creds(
-            json_key_io: StringIO.new(json_keyfile),
+            json_key_io: StringIO.new(task["json_keyfile"]),
             scope: "https://www.googleapis.com/auth/analytics.readonly"
           )
         end
