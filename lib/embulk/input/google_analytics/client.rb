@@ -139,6 +139,8 @@ module Embulk
             json_key_io: StringIO.new(task["json_key_content"]),
             scope: "https://www.googleapis.com/auth/analytics.readonly"
           )
+        rescue => e
+          raise ConfigError.new(e.message)
         end
       end
     end
