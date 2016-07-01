@@ -57,9 +57,9 @@ module Embulk
         #end
 
         def self.task_from_config(config)
-          json_keyfile = config.param("json_keyfile", :hash, default: {content: ""}).param("content", :string)
+          json_key_content = config.param("json_key_content", :string)
           {
-            "json_keyfile" => json_keyfile,
+            "json_key_content" => json_key_content,
             "view_id" => config.param("view_id", :string),
             "dimensions" => config.param("dimensions", :array, default: []),
             "metrics" => config.param("metrics", :array, default: []),

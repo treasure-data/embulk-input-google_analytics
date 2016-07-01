@@ -7,7 +7,7 @@ Embulk input plugin for Google Analytics reports.
 
 ## Configuration
 
-- **json_keyfile**: See example config.
+- **json_key_content**: See example config.
 - **view_id**: View ID for target data. You can find it on [Google Analytics page (you need a permission to access Admin page](https://lucidpress.zendesk.com/hc/en-us/articles/207335356-Find-your-Google-Analytics-Tracking-ID-View-ID) (string, required)
 - **time_series**: Only `ga:dateHour` or `ga:date` (string, required)
 - **dimensions**: Target dimensions (array, default: `[]` )
@@ -20,20 +20,19 @@ Embulk input plugin for Google Analytics reports.
 ```yaml
 in:
   type: google_analytics
-  json_keyfile:
-    content: |
-      {
-        "type": "service_account",
-        "project_id": "....",
-        "private_key_id": "....",
-        "private_key": "-----BEGIN PRIVATE KEY-----\n..........................\n-----END PRIVATE KEY-----\n",
-        "client_email": ".....",
-        "client_id": ".........",
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://accounts.google.com/o/oauth2/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": ".........."
-      }
+  json_key_content: |
+    {
+      "type": "service_account",
+      "project_id": "....",
+      "private_key_id": "....",
+      "private_key": "-----BEGIN PRIVATE KEY-----\n..........................\n-----END PRIVATE KEY-----\n",
+      "client_email": ".....",
+      "client_id": ".........",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://accounts.google.com/o/oauth2/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": ".........."
+    }
   view_id: 123111111
   time_series: "ga:dateHour" # hourly basis
  

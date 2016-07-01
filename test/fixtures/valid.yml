@@ -1,10 +1,9 @@
 in:
   type: google_analytics
-  json_keyfile:
-    content: |
-      {
-        "type": "service_account"
-      }
+  json_key_content: |
+    {
+      "type": "service_account"
+    }
   view_id: 101111111
   time_series: "ga:dateHour"
  

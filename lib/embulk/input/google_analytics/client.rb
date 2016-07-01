@@ -136,7 +136,7 @@ module Embulk
 
         def auth
           Google::Auth::ServiceAccountCredentials.make_creds(
-            json_key_io: StringIO.new(task["json_keyfile"]),
+            json_key_io: StringIO.new(task["json_key_content"]),
             scope: "https://www.googleapis.com/auth/analytics.readonly"
           )
         end
