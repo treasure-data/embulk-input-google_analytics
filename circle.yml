@@ -1,0 +1,23 @@
+machine:
+  java:
+    version: oraclejdk8
+  ruby:
+    version: jruby-9.0.4.0
+  environment:
+    JRUBY_OPTS: "-Xcli.debug=true --debug"
+
+dependencies:
+  pre:
+    - ruby -v
+    - bundle -v
+    - grep bundler <<< "$(gem list)" || gem i bundler --no-document
+    - bundle -v
+
+test:
+  override:
+    - bundle exec rake cov
+
+general:
+  artifacts:
+    - "coverage"
+
