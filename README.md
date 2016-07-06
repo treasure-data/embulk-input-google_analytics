@@ -1,5 +1,6 @@
 # This plugin is under the development
 
+[![CircleCI](https://circleci.com/gh/treasure-data/embulk-input-google_analytics/tree/master.svg?style=svg)](https://circleci.com/gh/treasure-data/embulk-input-google_analytics/tree/master)
 
 # Google Analytics input plugin for Embulk
 
