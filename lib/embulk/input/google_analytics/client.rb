@@ -22,13 +22,23 @@ module Embulk
           Embulk.logger.info "view_id:#{view_id} timezone has been set as '#{get_profile[:timezone]}'"
 
           loop do
-            report = get_reports(page_token).to_h[:reports].first
+            result = get_reports(page_token)
+            report = result.to_h[:reports].first
+
             unless page_token
               # display for first request only
               Embulk.logger.info "Total: #{report[:data][:row_count]} rows. Fetched first response"
             end
 
-            break if report[:data][:rows].empty?
+            if !report[:data].has_key?(:rows)
+              Embulk.logger.warn "Result doesn't contain rows."
+              break
+            end
+
+            if report[:data][:rows].empty?
+              Embulk.logger.warn "Result has 0 rows."
+              break
+            end
 
             dimensions = report[:column_header][:dimensions]
             metrics = report[:column_header][:metric_header][:metric_header_entries].map{|m| m[:name]}
@@ -97,6 +107,8 @@ module Embulk
 
           request = Google::Apis::AnalyticsreportingV4::GetReportsRequest.new
           request.report_requests = build_report_request(page_token)
+
+          Embulk.logger.info "Query to Core Report API: #{request.to_json}"
           service.batch_get_reports request
         end
 
