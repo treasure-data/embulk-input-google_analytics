@@ -147,6 +147,21 @@ module Embulk
           end
         end
 
+        sub_test_case "canonicalize_column_name" do
+          data do
+            [
+              ["typical", ["ga:dateHour", "date_hour"]],
+              ["all capital", ["ga:CPM", "cpm"]],
+              ["capitals with word", ["ga:goalXXValue", "goal_xxvalue"]],
+              ["ID", ["ga:adwordsCustomerID", "adwords_customer_id"]],
+              ["word + capitals", ["ga:dcmCTR", "dcm_ctr"]],
+            ]
+          end
+          test "converting" do |(target, expected)|
+            assert_equal expected, Plugin.canonicalize_column_name(target)
+          end
+        end
+
         def valid_config
           fixture_load("valid.yml")
         end

@@ -79,7 +79,7 @@ module Embulk
 
         def self.canonicalize_column_name(name)
           # ga:dateHour -> date_hour
-          name.gsub(/^ga:/, "").gsub(/[A-Z]/, "_\\0").gsub(/^_/, "").downcase
+          name.gsub(/^ga:/, "").gsub(/[A-Z]+/, "_\\0").gsub(/^_/, "").downcase
         end
 
         def init
