@@ -1,5 +1,3 @@
-# This plugin is under the development
-
 [![CircleCI](https://circleci.com/gh/treasure-data/embulk-input-google_analytics/tree/master.svg?style=svg)](https://circleci.com/gh/treasure-data/embulk-input-google_analytics/tree/master)
 [![Code Climate](https://codeclimate.com/github/treasure-data/embulk-input-google_analytics/badges/gpa.svg)](https://codeclimate.com/github/treasure-data/embulk-input-google_analytics)
 [![Test Coverage](https://codeclimate.com/github/treasure-data/embulk-input-google_analytics/badges/coverage.svg)](https://codeclimate.com/github/treasure-data/embulk-input-google_analytics/coverage)
