@@ -13,7 +13,6 @@ module Embulk
         include FixtureHelper
 
         sub_test_case ".transaction" do
-          setup { stub(Plugin).resume { Hash.new } }
           setup do
             any_instance_of(Client) do |klass|
               stub(klass).get_columns_list do
@@ -82,6 +81,46 @@ module Embulk
               "Unknown metric/dimension '#{unknown_col_name}'"
             end
           end
+
+          sub_test_case "type conversion" do
+            setup do
+              any_instance_of(Client) do |klass|
+                stub(klass).get_columns_list do
+                  [
+                    {id: "ga:dateHour", attributes: {dataType: "STRING"}},
+                    {id: "ga:itemsPerPurchase", attributes: {dataType: "FLOAT"}},
+                    {id: "ga:visits", attributes: {dataType: "INTEGER"}},
+                    {id: "ga:CPM", attributes: {dataType: "CURRENCY"}},
+                    {id: "ga:CTR", attributes: {dataType: "PERCENT"}},
+                    {id: "ga:sessionDuration", attributes: {dataType: "TIME"}},
+                  ]
+                end
+              end
+            end
+
+            test "Convert Embulk data types" do
+              conf = valid_config["in"]
+              conf["dimensions"] = []
+              conf["metrics"] = [
+                "ga:sessionDuration",
+                "ga:CPM",
+                "ga:CTR",
+                "ga:visits",
+                "ga:itemsPerPurchase",
+              ]
+              expected_columns = [
+                Column.new(nil, "date_hour", :timestamp),
+                Column.new(nil, "session_duration", :timestamp),
+                Column.new(nil, "cpm", :double),
+                Column.new(nil, "ctr", :double),
+                Column.new(nil, "visits", :long),
+                Column.new(nil, "items_per_purchase", :double),
+              ]
+
+              mock(Plugin).resume(anything, expected_columns, anything)
+              Plugin.transaction(embulk_config(conf))
+            end
+          end
         end
 
         sub_test_case ".run" do
@@ -144,6 +183,21 @@ module Embulk
                 @plugin.run
               end
             end
+          end
+        end
+
+        sub_test_case "canonicalize_column_name" do
+          data do
+            [
+              ["typical", ["ga:dateHour", "date_hour"]],
+              ["all capital", ["ga:CPM", "cpm"]],
+              ["capitals with word", ["ga:goalXXValue", "goal_xxvalue"]],
+              ["ID", ["ga:adwordsCustomerID", "adwords_customer_id"]],
+              ["word + capitals", ["ga:dcmCTR", "dcm_ctr"]],
+            ]
+          end
+          test "converting" do |(target, expected)|
+            assert_equal expected, Plugin.canonicalize_column_name(target)
           end
         end
 

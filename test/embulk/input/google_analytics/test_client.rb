@@ -176,12 +176,27 @@ module Embulk
           end
         end
 
+        sub_test_case "auth" do
+          setup do
+            conf = valid_config["in"]
+            @client = Client.new(task(embulk_config(conf)))
+          end
+
+          test "raise ConfigError when auth failed" do
+            stub(Google::Auth::ServiceAccountCredentials).make_creds { raise "some error" }
+            assert_raise(Embulk::ConfigError) do
+              @client.auth
+            end
+          end
+        end
+
         sub_test_case "each_report_row" do
           setup do
             conf = valid_config["in"]
             @client = Client.new(task(embulk_config(conf)))
             stub(@client).get_profile { {timezone: "Asia/Tokyo"} }
-            stub(Embulk).logger { Logger.new(File::NULL) }
+            @logger = Logger.new(File::NULL)
+            stub(Embulk).logger { @logger }
           end
 
           test "without pagination" do
@@ -225,6 +240,27 @@ module Embulk
             assert_equal 6, fetched_rows.length
           end
 
+          sub_test_case "logger" do
+            test "with empty rows" do
+              response = report.dup
+              response[:reports].first[:data][:rows] = []
+              response[:reports].first[:data][:row_count] = 0
+              stub(@client).get_reports { response }
+
+              mock(@logger).warn("Result has 0 rows.")
+              @client.each_report_row {}
+            end
+
+            test "without rows" do
+              response = report.dup
+              response[:reports].first[:data].delete(:rows)
+              stub(@client).get_reports { response }
+
+              mock(@logger).warn("Result doesn't contain rows.")
+              @client.each_report_row {}
+            end
+          end
+
           def report_with_pages
             response = report.dup
             response[:reports].first[:next_page_token] = "10000"
@@ -232,52 +268,8 @@ module Embulk
           end
 
           def report
-            {
-              reports: [
-                {
-                  column_header: {
-                    dimensions: [
-                      "ga:dateHour", "ga:browser"
-                    ],
-                    metric_header: {
-                      metric_header_entries: [
-                        {type: "INTEGER", name: "ga:visits"},
-                        {type: "INTEGER", name: "ga:pageviews"},
-                      ]
-                    }
-                  },
-                  data: {
-                    row_count: 3,
-                    rows: [
-                      {
-                        metrics: [
-                          { values: ["1","1"] },
-                        ],
-                        dimensions: [
-                          "2016060120", "curl"
-                        ]
-                      },
-                      {
-                        metrics: [
-                          { values: ["2","2"] },
-                        ],
-                        dimensions: [
-                          "2016060121", "curl"
-                        ]
-                      },
-                      {
-                        metrics: [
-                          { values: ["3","3"] },
-                        ],
-                        dimensions: [
-                          "2016060122", "curl"
-                        ]
-                      },
-                    ]
-                  }
-                }
-              ]
-            }
+            json = fixture_read("reports.json")
+            JSON.parse(json, symbolize_names: true)
           end
         end
 
