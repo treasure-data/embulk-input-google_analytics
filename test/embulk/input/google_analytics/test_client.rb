@@ -195,7 +195,8 @@ module Embulk
             conf = valid_config["in"]
             @client = Client.new(task(embulk_config(conf)))
             stub(@client).get_profile { {timezone: "Asia/Tokyo"} }
-            stub(Embulk).logger { Logger.new(File::NULL) }
+            @logger = Logger.new(File::NULL)
+            stub(Embulk).logger { @logger }
           end
 
           test "without pagination" do
@@ -237,6 +238,27 @@ module Embulk
               fetched_rows << row
             end
             assert_equal 6, fetched_rows.length
+          end
+
+          sub_test_case "logger" do
+            test "with empty rows" do
+              response = report.dup
+              response[:reports].first[:data][:rows] = []
+              response[:reports].first[:data][:row_count] = 0
+              stub(@client).get_reports { response }
+
+              mock(@logger).warn("Result has 0 rows.")
+              @client.each_report_row {}
+            end
+
+            test "without rows" do
+              response = report.dup
+              response[:reports].first[:data].delete(:rows)
+              stub(@client).get_reports { response }
+
+              mock(@logger).warn("Result doesn't contain rows.")
+              @client.each_report_row {}
+            end
           end
 
           def report_with_pages
