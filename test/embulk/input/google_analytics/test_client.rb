@@ -176,6 +176,20 @@ module Embulk
           end
         end
 
+        sub_test_case "auth" do
+          setup do
+            conf = valid_config["in"]
+            @client = Client.new(task(embulk_config(conf)))
+          end
+
+          test "raise ConfigError when auth failed" do
+            stub(Google::Auth::ServiceAccountCredentials).make_creds { raise "some error" }
+            assert_raise(Embulk::ConfigError) do
+              @client.auth
+            end
+          end
+        end
+
         sub_test_case "each_report_row" do
           setup do
             conf = valid_config["in"]
