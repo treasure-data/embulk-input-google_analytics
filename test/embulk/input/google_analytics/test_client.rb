@@ -246,52 +246,8 @@ module Embulk
           end
 
           def report
-            {
-              reports: [
-                {
-                  column_header: {
-                    dimensions: [
-                      "ga:dateHour", "ga:browser"
-                    ],
-                    metric_header: {
-                      metric_header_entries: [
-                        {type: "INTEGER", name: "ga:visits"},
-                        {type: "INTEGER", name: "ga:pageviews"},
-                      ]
-                    }
-                  },
-                  data: {
-                    row_count: 3,
-                    rows: [
-                      {
-                        metrics: [
-                          { values: ["1","1"] },
-                        ],
-                        dimensions: [
-                          "2016060120", "curl"
-                        ]
-                      },
-                      {
-                        metrics: [
-                          { values: ["2","2"] },
-                        ],
-                        dimensions: [
-                          "2016060121", "curl"
-                        ]
-                      },
-                      {
-                        metrics: [
-                          { values: ["3","3"] },
-                        ],
-                        dimensions: [
-                          "2016060122", "curl"
-                        ]
-                      },
-                    ]
-                  }
-                }
-              ]
-            }
+            json = fixture_read("reports.json")
+            JSON.parse(json, symbolize_names: true)
           end
         end
 
