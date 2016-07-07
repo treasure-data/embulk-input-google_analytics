@@ -21,10 +21,10 @@ module Embulk
               case col_info[:attributes][:dataType]
               when "STRING"
                 :string
-              when "INTEGER", "CURRENCY"
+              when "INTEGER"
                 :long
-              when "PERCENT", "FLOAT"
-                :float
+              when "PERCENT", "FLOAT", "CURRENCY"
+                :double
               when "TIME"
                 :timestamp
               end
