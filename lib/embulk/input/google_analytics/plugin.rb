@@ -46,16 +46,6 @@ module Embulk
           return next_config_diff
         end
 
-        # TODO
-        #def self.guess(config)
-        #  sample_records = [
-        #    {"example"=>"a", "column"=>1, "value"=>0.1},
-        #    {"example"=>"a", "column"=>2, "value"=>0.2},
-        #  ]
-        #  columns = Guess::SchemaGuess.from_hash_records(sample_records)
-        #  return {"columns" => columns}
-        #end
-
         def self.task_from_config(config)
           json_key_content = config.param("json_key_content", :string)
           {
@@ -70,7 +60,7 @@ module Embulk
         end
 
         def self.columns_from_task(task)
-          columns = [
+          [
             task["time_series"],
             task["dimensions"],
             task["metrics"],
@@ -101,7 +91,7 @@ module Embulk
 
         def preview?
           org.embulk.spi.Exec.isPreview()
-        rescue java.lang.NullPointerException => e
+        rescue java.lang.NullPointerException
           false
         end
 
