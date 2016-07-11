@@ -18,6 +18,29 @@ Embulk input plugin for Google Analytics reports.
 - **start_date**: Target report start date (string, default: [7 days ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
 - **end_date**: Target report end date (string, default: [1 day ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
 
+### About `json_key_content` option.
+
+You need a service account on Google.
+
+<ol>
+  <li>Open the <a href="https://console.developers.google.com/permissions/serviceaccounts"><b>Service accounts</b> page</a>. If prompted,
+select a project.</li>
+  <li>Click <b>Create service account</b>.</li>
+  <li>
+    
+    In the <b>Create service account</b> window, type a name for the service
+    account, and select <b>Furnish a new private key</b>. If you want to
+    <a href="https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority">grant
+    Google Apps domain-wide authority</a> to the service account, also select
+    <b>Enable Google Apps Domain-wide Delegation</b>.
+    
+    Then click <b>Create</b>.</li>
+</ol>
+From: <https://developers.google.com/identity/protocols/OAuth2ServiceAccount>
+
+Screenshot: ![Service Account](./service_account.png)
+
+
 ## Example
 
 ```yaml
