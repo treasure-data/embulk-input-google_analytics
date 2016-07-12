@@ -190,6 +190,40 @@ module Embulk
           end
         end
 
+        sub_test_case "too_early_data?" do
+          def stub_timezone(client)
+            stub(client).get_profile { {timezone: "America/Los_Angeles" } }
+            stub(client).swap_time_zone do |block|
+              stub(Time.zone).now { @now }
+              block.call
+            end
+          end
+
+          test "ga:dateHour" do
+            conf = valid_config["in"]
+            conf["time_series"] = "ga:dateHour"
+            client = Client.new(task(embulk_config(conf)))
+            @now = Time.parse("2016-06-01 05:00:00 PDT")
+            stub_timezone(client)
+
+            assert_equal false, client.too_early_data?("2016060104")
+            assert_equal true , client.too_early_data?("2016060105")
+            assert_equal true , client.too_early_data?("2016060106")
+          end
+
+          test "ga:date" do
+            conf = valid_config["in"]
+            conf["time_series"] = "ga:date"
+            client = Client.new(task(embulk_config(conf)))
+            @now = Time.parse("2016-06-03 05:00:00 PDT")
+            stub_timezone(client)
+
+            assert_equal false, client.too_early_data?("20160601")
+            assert_equal false, client.too_early_data?("20160602")
+            assert_equal true , client.too_early_data?("20160603")
+          end
+        end
+
         sub_test_case "each_report_row" do
           setup do
             conf = valid_config["in"]

@@ -46,8 +46,9 @@ module Embulk
               dim = dimensions.zip(row[:dimensions]).to_h
               met = metrics.zip(row[:metrics].first[:values]).to_h
               format_row = dim.merge(met)
-              time = format_row[task["time_series"]]
-              format_row[task["time_series"]] = time_parse_with_profile_timezone(time)
+              raw_time = format_row[task["time_series"]]
+              next if too_early_data?(raw_time)
+              format_row[task["time_series"]] = time_parse_with_profile_timezone(raw_time)
               block.call format_row
             end
 
@@ -93,11 +94,9 @@ module Embulk
             end
           parts = Date._strptime(time_string, date_format)
 
-          orig_timezone = Time.zone
-          Time.zone = get_profile[:timezone]
-          Time.zone.local(*parts.values_at(:year, :mon, :mday, :hour)).to_time
-        ensure
-          Time.zone = orig_timezone
+          swap_time_zone do
+            Time.zone.local(*parts.values_at(:year, :mon, :mday, :hour)).to_time
+          end
         end
 
         def get_reports(page_token = nil)
@@ -153,6 +152,27 @@ module Embulk
           )
         rescue => e
           raise ConfigError.new(e.message)
+        end
+
+        def swap_time_zone(&block)
+          orig_timezone = Time.zone
+          Time.zone = get_profile[:timezone]
+          yield
+        ensure
+          Time.zone = orig_timezone
+        end
+
+        def too_early_data?(time_str)
+          # fetching 20160720 data on 2016-07-20, it is too early fetching
+          swap_time_zone do
+            now = Time.zone.now
+            case task["time_series"]
+            when "ga:dateHour"
+              time_str.to_i >= now.strftime("%Y%m%d%H").to_i
+            when "ga:date"
+              time_str.to_i >= now.strftime("%Y%m%d").to_i
+            end
+          end
         end
       end
     end
