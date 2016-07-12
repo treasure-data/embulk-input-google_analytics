@@ -19,6 +19,30 @@ Embulk input plugin for Google Analytics reports.
 - **end_date**: Target report end date. Valid format is "YYYY-MM-DD". (string, default: [1 day ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
 - **incremental**: `true` for generate "config_diff" with `embulk run -c config.diff` (bool, default: true)
 - **ignore_until**: Ignore fetched records until this time. Mainly for incremental:true. (string, default: nil)
+- **retry_limit**: Try to retry this times (integer, default: 5)
+- **retry_initial_wait_sec**: Wait seconds for exponential backoff initial value (integer, default: 2)
+
+### About `json_key_content` option.
+
+You need a service account on Google.
+
+<ol>
+  <li>Open the <a href="https://console.developers.google.com/permissions/serviceaccounts"><b>Service accounts</b> page</a>. If prompted,
+select a project.</li>
+  <li>Click <b>Create service account</b>.</li>
+  <li>
+    
+    In the <b>Create service account</b> window, type a name for the service
+    account, and select <b>Furnish a new private key</b>. If you want to
+    <a href="https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority">grant
+    Google Apps domain-wide authority</a> to the service account, also select
+    <b>Enable Google Apps Domain-wide Delegation</b>.
+    
+    Then click <b>Create</b>.</li>
+</ol>
+From: <https://developers.google.com/identity/protocols/OAuth2ServiceAccount>
+
+Screenshot: ![Service Account](./service_account.png)
 
 ## Example
 

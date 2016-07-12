@@ -12,6 +12,8 @@ in:
   metrics:
     - "ga:visits"
     - "ga:pageviews"
+  retry_limit: 2
+  retry_initial_wait_sec: 0
 
 out:
   type: stdout
