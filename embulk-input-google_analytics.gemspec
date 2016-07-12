@@ -17,6 +17,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "google-api-client", "~> 0.9"
   spec.add_dependency "signet"
   spec.add_dependency "activesupport" # for Time.zone.parse, Time.zone.now
+  spec.add_dependency "perfect_retry", "~> 0.5"
 
   spec.add_development_dependency 'embulk', ['>= 0.8.9']
   spec.add_development_dependency 'bundler', ['>= 1.10.6']

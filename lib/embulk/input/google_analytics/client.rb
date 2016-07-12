@@ -1,3 +1,4 @@
+require "perfect_retry"
 require "active_support/core_ext/time"
 require "google/apis/analyticsreporting_v4"
 require "google/apis/analytics_v3"
@@ -81,7 +82,9 @@ module Embulk
           service.authorization = auth
 
           Embulk.logger.debug "Fetching profile from API"
-          service.list_profiles("~all", "~all")
+          retryer.with_retry do
+            service.list_profiles("~all", "~all")
+          end
         end
 
         def time_parse_with_profile_timezone(time_string)
@@ -108,14 +111,18 @@ module Embulk
           request.report_requests = build_report_request(page_token)
 
           Embulk.logger.info "Query to Core Report API: #{request.to_json}"
-          service.batch_get_reports request
+          retryer.with_retry do
+            service.batch_get_reports request
+          end
         end
 
         def get_columns_list
           # https://developers.google.com/analytics/devguides/reporting/metadata/v3/reference/metadata/columns/list
           service = Google::Apis::AnalyticsV3::AnalyticsService.new
           service.authorization = auth
-          service.list_metadata_columns("ga").to_h[:items]
+          retryer.with_retry do
+            service.list_metadata_columns("ga").to_h[:items]
+          end
         end
 
         def build_report_request(page_token = nil)
@@ -146,11 +153,13 @@ module Embulk
         end
 
         def auth
-          Google::Auth::ServiceAccountCredentials.make_creds(
-            json_key_io: StringIO.new(task["json_key_content"]),
-            scope: "https://www.googleapis.com/auth/analytics.readonly"
-          )
-        rescue => e
+          retryer.with_retry do
+            Google::Auth::ServiceAccountCredentials.make_creds(
+              json_key_io: StringIO.new(task["json_key_content"]),
+              scope: "https://www.googleapis.com/auth/analytics.readonly"
+            )
+          end
+        rescue Google::Apis::AuthorizationError => e
           raise ConfigError.new(e.message)
         end
 
@@ -172,6 +181,23 @@ module Embulk
             when "ga:date"
               time_str.to_i >= now.strftime("%Y%m%d").to_i
             end
+          end
+        end
+
+        def retryer
+          PerfectRetry.new do |config|
+            config.limit = task["retry_limit"]
+            config.logger = Embulk.logger
+            config.log_level = nil
+
+            # https://developers.google.com/analytics/devguides/reporting/core/v4/errors
+            # https://developers.google.com/analytics/devguides/reporting/core/v4/limits-quotas#additional_quota
+            # https://github.com/google/google-api-ruby-client/blob/master/lib/google/apis/errors.rb
+            # https://github.com/google/google-api-ruby-client/blob/0.9.11/lib/google/apis/core/http_command.rb#L33
+            config.rescues = Google::Apis::Core::HttpCommand::RETRIABLE_ERRORS
+            config.dont_rescues = [Embulk::DataError, Embulk::ConfigError]
+            config.sleep = lambda{|n| task["retry_initial_wait_sec"]* (2 ** (n-1)) }
+            config.raise_original_error = true
           end
         end
       end

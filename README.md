@@ -17,6 +17,8 @@ Embulk input plugin for Google Analytics reports.
 - **metrics**: Target metrics (array, default: `[]` )
 - **start_date**: Target report start date (string, default: [7 days ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
 - **end_date**: Target report end date (string, default: [1 day ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
+- **retry_limit**: Try to retry this times (integer, default: 5)
+- **retry_initial_wait_sec**: Wait seconds for exponential backoff initial value (integer, default: 2)
 
 ### About `json_key_content` option.
 
