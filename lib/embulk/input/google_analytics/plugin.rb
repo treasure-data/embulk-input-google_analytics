@@ -56,6 +56,8 @@ module Embulk
             "time_series" => config.param("time_series", :string),
             "start_date" => config.param("start_date", :string, default: nil),
             "end_date" => config.param("end_date", :string, default: nil),
+            "retry_limit" => config.param("retry_limit", :integer, default: 5),
+            "retry_initial_wait_sec" => config.param("retry_initial_wait_sec", :integer, default: 2),
           }
         end
 

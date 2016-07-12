@@ -179,13 +179,57 @@ module Embulk
         sub_test_case "auth" do
           setup do
             conf = valid_config["in"]
+            mute_logger
             @client = Client.new(task(embulk_config(conf)))
           end
 
-          test "raise ConfigError when auth failed" do
-            stub(Google::Auth::ServiceAccountCredentials).make_creds { raise "some error" }
-            assert_raise(Embulk::ConfigError) do
-              @client.auth
+          sub_test_case "retry" do
+            def should_retry
+              mock(Google::Auth::ServiceAccountCredentials).make_creds(anything).times(retryer.config.limit + 1) { raise error }
+              assert_raise do
+                @client.auth
+              end
+            end
+
+            def should_not_retry
+              mock(Google::Auth::ServiceAccountCredentials).make_creds(anything).times(1) { raise error }
+              assert_raise do
+                @client.auth
+              end
+            end
+
+            setup do
+              # stub(Google::Auth::ServiceAccountCredentials).make_creds { raise error }
+            end
+
+            sub_test_case "Server error (5xx)" do
+              def error
+                Google::Apis::ServerError.new("error")
+              end
+
+              test "should retry" do
+                should_retry
+              end
+            end
+
+            sub_test_case "Rate Limit" do
+              def error
+                Google::Apis::RateLimitError.new("error")
+              end
+
+              test "should retry" do
+                should_retry
+              end
+            end
+
+            sub_test_case "Auth Error" do
+              def error
+                Google::Apis::AuthorizationError.new("error")
+              end
+
+              test "should not retry" do
+                should_not_retry
+              end
             end
           end
         end
@@ -317,6 +361,15 @@ module Embulk
 
         def embulk_config(hash)
           Embulk::DataSource.new(hash)
+        end
+
+        def mute_logger
+          @logger = Logger.new(File::NULL)
+          stub(Embulk).logger { @logger }
+        end
+
+        def retryer
+          @client.retryer
         end
       end
     end
