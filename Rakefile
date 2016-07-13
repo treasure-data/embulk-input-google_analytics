@@ -1,4 +1,5 @@
 require "bundler/gem_tasks"
+require "gem_release_helper/tasks"
 
 task default: :test
 
@@ -12,4 +13,9 @@ task :cov do
   ENV["COVERAGE"] = "1"
   ruby("--debug", "test/run-test.rb", "--use-color=yes", "--collector=dir")
 end
+
+GemReleaseHelper::Tasks.install({
+  gemspec: "./embulk-input-google_analytics.gemspec",
+  github_name: "treasure-data/embulk-input-google_analytics",
+})
 
