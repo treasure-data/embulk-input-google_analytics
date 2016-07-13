@@ -57,7 +57,7 @@ module Embulk
             "start_date" => config.param("start_date", :string, default: nil),
             "end_date" => config.param("end_date", :string, default: nil),
             "incremental" => config.param("incremental", :bool, default: true),
-            "ignore_until" => config.param("ignore_until", :string, default: nil),
+            "last_record_time" => config.param("last_record_time", :string, default: nil),
             "retry_limit" => config.param("retry_limit", :integer, default: 5),
             "retry_initial_wait_sec" => config.param("retry_initial_wait_sec", :integer, default: 2),
           }
@@ -83,12 +83,12 @@ module Embulk
           client = Client.new(task, preview?)
           columns = self.class.columns_from_task(task)
 
-          ignore_until = task["ignore_until"] ? Time.parse(task["ignore_until"]) : nil
+          last_record_time = task["last_record_time"] ? Time.parse(task["last_record_time"]) : nil
 
           latest_time_series = nil
           client.each_report_row do |row|
             time = row[task["time_series"]]
-            next if ignore_until && time <= ignore_until
+            next if last_record_time && time <= last_record_time
 
             values = row.values_at(*columns)
             page_builder.add values
@@ -136,7 +136,7 @@ module Embulk
             # 2nd run       |------------------------|-----
             #               ^^^^^ duplicated
             #
-            # "ignore_until" option solves that problem
+            # "last_record_time" option solves that problem
             #
             #           Date|        2016-07-03      |   2016-07-04
             #           Hour|    5                   |    5
@@ -144,13 +144,13 @@ module Embulk
             # 2nd run       #####|-------------------|-----
             #               ^^^^^ ignored (skipped)
             #
-            task_report[:ignore_until] = fetched_latest_time.strftime("%Y-%m-%d %H:%M:%S %z")
+            task_report[:last_record_time] = fetched_latest_time.strftime("%Y-%m-%d %H:%M:%S %z")
           else
             # no records fetched, don't modify config_diff
             task_report = {
               start_date: task["start_date"],
               end_date: task["end_date"],
-              ignore_until: task["ignore_until"],
+              last_record_time: task["last_record_time"],
             }
           end
 

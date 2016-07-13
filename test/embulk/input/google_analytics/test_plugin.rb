@@ -157,14 +157,14 @@ module Embulk
                 @plugin.run
               end
 
-              sub_test_case "ignore_until option" do
+              sub_test_case "last_record_time option" do
                 setup do
                   Time.zone = "America/Los_Angeles"
-                  @ignore_until = Time.zone.parse("2016-06-01 12:00:00").to_time
+                  @last_record_time = Time.zone.parse("2016-06-01 12:00:00").to_time
 
                   conf = valid_config["in"]
                   conf["time_series"] = time_series
-                  conf["ignore_until"] = @ignore_until.strftime("%Y-%m-%d %H:%M:%S %z")
+                  conf["last_record_time"] = @last_record_time.strftime("%Y-%m-%d %H:%M:%S %z")
                   @plugin = Plugin.new(embulk_config(conf), nil, nil, @page_builder)
                 end
 
@@ -172,7 +172,7 @@ module Embulk
                   any_instance_of(Client) do |klass|
                     stub(klass).each_report_row do |block|
                       row = {
-                        "ga:dateHour" => @ignore_until,
+                        "ga:dateHour" => @last_record_time,
                         "ga:browser" => "wget",
                         "ga:visits" => 3,
                         "ga:pageviews" => 4,
@@ -214,14 +214,14 @@ module Embulk
                 @plugin.run
               end
 
-              sub_test_case "ignore_until option" do
+              sub_test_case "last_record_time option" do
                 setup do
                   Time.zone = "America/Los_Angeles"
-                  @ignore_until = Time.zone.parse("2016-06-01 12:00:00").to_time
+                  @last_record_time = Time.zone.parse("2016-06-01 12:00:00").to_time
 
                   conf = valid_config["in"]
                   conf["time_series"] = time_series
-                  conf["ignore_until"] = @ignore_until.strftime("%Y-%m-%d %H:%M:%S %z")
+                  conf["last_record_time"] = @last_record_time.strftime("%Y-%m-%d %H:%M:%S %z")
                   @plugin = Plugin.new(embulk_config(conf), nil, nil, @page_builder)
                 end
 
@@ -229,7 +229,7 @@ module Embulk
                   any_instance_of(Client) do |klass|
                     stub(klass).each_report_row do |block|
                       row = {
-                        "ga:date" => @ignore_until,
+                        "ga:date" => @last_record_time,
                         "ga:browser" => "wget",
                         "ga:visits" => 3,
                         "ga:pageviews" => 4,
@@ -281,7 +281,7 @@ module Embulk
                 expected = {
                   start_date: task["start_date"],
                   end_date: task["end_date"],
-                  ignore_until: task["ignore_until"],
+                  last_record_time: task["last_record_time"],
                 }
                 assert_equal expected, plugin.calculate_next_times(nil)
               end
@@ -300,7 +300,7 @@ module Embulk
                   expected = {
                     start_date: latest_time.strftime("%Y-%m-%d"),
                     end_date: "today",
-                    ignore_until: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
                   assert_equal expected, plugin.calculate_next_times(latest_time)
                 end
@@ -317,7 +317,7 @@ module Embulk
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
                     start_date: latest_time.strftime("%Y-%m-%d"),
-                    ignore_until: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
                   assert_equal expected, plugin.calculate_next_times(latest_time)
                 end
@@ -338,7 +338,7 @@ module Embulk
                 expected = {
                   start_date: task["start_date"],
                   end_date: task["end_date"],
-                  ignore_until: task["ignore_until"],
+                  last_record_time: task["last_record_time"],
                 }
                 assert_equal expected, plugin.calculate_next_times(nil)
               end
@@ -357,7 +357,7 @@ module Embulk
                   expected = {
                     start_date: latest_time.strftime("%Y-%m-%d"),
                     end_date: "today",
-                    ignore_until: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
                   assert_equal expected, plugin.calculate_next_times(latest_time)
                 end
@@ -374,7 +374,7 @@ module Embulk
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
                     start_date: latest_time.strftime("%Y-%m-%d"),
-                    ignore_until: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
                   assert_equal expected, plugin.calculate_next_times(latest_time)
                 end

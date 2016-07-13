@@ -18,7 +18,7 @@ Embulk input plugin for Google Analytics reports.
 - **start_date**: Target report start date. Valid format is "YYYY-MM-DD". (string, default: [7 days ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
 - **end_date**: Target report end date. Valid format is "YYYY-MM-DD". (string, default: [1 day ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
 - **incremental**: `true` for generate "config_diff" with `embulk run -c config.diff` (bool, default: true)
-- **ignore_until**: Ignore fetched records until this time. Mainly for incremental:true. (string, default: nil)
+- **last_record_time**: Ignore fetched records until this time. Mainly for incremental:true. (string, default: nil)
 - **retry_limit**: Try to retry this times (integer, default: 5)
 - **retry_initial_wait_sec**: Wait seconds for exponential backoff initial value (integer, default: 2)
 
