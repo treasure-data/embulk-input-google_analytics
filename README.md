@@ -44,6 +44,17 @@ From: <https://developers.google.com/identity/protocols/OAuth2ServiceAccount>
 
 Screenshot: ![Service Account](./service_account.png)
 
+## Why the result doesn't match with web interface?
+
+Google Reporting API uses "sampling" data.
+
+- https://developers.google.com/analytics/devguides/reporting/core/v4/basics#sampling
+- https://support.google.com/analytics/answer/2637192
+
+That means sometimes result will be unmatched with Google Analytics web interface, and the result is based on sampled data, not all of raw data. This is a Google API's limitation.
+
+Currently a sampling level supported by this plugin is DEFAULT only. Let us know if you want to use other sampling level (SMALL or LARGE).
+
 ## Example
 
 ```yaml
