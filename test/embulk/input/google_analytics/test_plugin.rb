@@ -363,6 +363,24 @@ module Embulk
                 end
               end
 
+              sub_test_case "end_date is nil" do
+                setup do
+                  @config[:start_date] = nil
+                  @config[:end_date] = nil
+                end
+
+                test "config_diff will modify" do
+                  latest_time = Time.parse("2000-01-07")
+                  plugin = Plugin.new(config, nil, nil, @page_builder)
+                  expected = {
+                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    end_date: "today",
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                  }
+                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                end
+              end
+
               sub_test_case "end_date is given as nDaysAgo" do
                 setup do
                   @config[:start_date] = "2000-01-01"
