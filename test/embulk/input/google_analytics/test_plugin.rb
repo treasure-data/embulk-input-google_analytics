@@ -156,6 +156,37 @@ module Embulk
                 mock(@page_builder).finish
                 @plugin.run
               end
+
+              sub_test_case "last_record_time option" do
+                setup do
+                  Time.zone = "America/Los_Angeles"
+                  @last_record_time = Time.zone.parse("2016-06-01 12:00:00").to_time
+
+                  conf = valid_config["in"]
+                  conf["time_series"] = time_series
+                  conf["last_record_time"] = @last_record_time.strftime("%Y-%m-%d %H:%M:%S %z")
+                  @plugin = Plugin.new(embulk_config(conf), nil, nil, @page_builder)
+                end
+
+                test "ignore records when old" do
+                  any_instance_of(Client) do |klass|
+                    stub(klass).each_report_row do |block|
+                      row = {
+                        "ga:dateHour" => @last_record_time,
+                        "ga:browser" => "wget",
+                        "ga:visits" => 3,
+                        "ga:pageviews" => 4,
+                      }
+                      block.call row
+                    end
+                  end
+
+                  mock(@page_builder).add.never
+                  mock(@page_builder).finish
+                  @plugin.run
+                end
+              end
+
             end
 
             sub_test_case "time_series: 'ga:date'" do
@@ -182,6 +213,36 @@ module Embulk
                 mock(@page_builder).finish
                 @plugin.run
               end
+
+              sub_test_case "last_record_time option" do
+                setup do
+                  Time.zone = "America/Los_Angeles"
+                  @last_record_time = Time.zone.parse("2016-06-01 12:00:00").to_time
+
+                  conf = valid_config["in"]
+                  conf["time_series"] = time_series
+                  conf["last_record_time"] = @last_record_time.strftime("%Y-%m-%d %H:%M:%S %z")
+                  @plugin = Plugin.new(embulk_config(conf), nil, nil, @page_builder)
+                end
+
+                test "ignore records when old" do
+                  any_instance_of(Client) do |klass|
+                    stub(klass).each_report_row do |block|
+                      row = {
+                        "ga:date" => @last_record_time,
+                        "ga:browser" => "wget",
+                        "ga:visits" => 3,
+                        "ga:pageviews" => 4,
+                      }
+                      block.call row
+                    end
+                  end
+
+                  mock(@page_builder).add.never
+                  mock(@page_builder).finish
+                  @plugin.run
+                end
+              end
             end
           end
         end
@@ -198,6 +259,135 @@ module Embulk
           end
           test "converting" do |(target, expected)|
             assert_equal expected, Plugin.canonicalize_column_name(target)
+          end
+        end
+
+        sub_test_case "calculate_next_times" do
+          setup do
+            @page_builder = Object.new
+            @config = embulk_config(valid_config["in"])
+          end
+
+          sub_test_case "ga:dateHour" do
+            setup do
+              conf = valid_config["in"]
+              conf["time_series"] = "ga:dateHour"
+              @config = embulk_config(conf)
+            end
+
+            sub_test_case "no records fetched" do
+              test "config_diff won't modify" do
+                plugin = Plugin.new(config, nil, nil, @page_builder)
+                expected = {
+                  start_date: task["start_date"],
+                  end_date: task["end_date"],
+                  last_record_time: task["last_record_time"],
+                }
+                assert_equal expected, plugin.calculate_next_times(nil)
+              end
+            end
+
+            sub_test_case "updated" do
+              sub_test_case "end_date is given as YYYY-MM-DD" do
+                setup do
+                  @config[:start_date] = "2000-01-01"
+                  @config[:end_date] = "2000-01-05"
+                end
+
+                test "config_diff will modify" do
+                  latest_time = Time.parse("2000-01-07")
+                  plugin = Plugin.new(config, nil, nil, @page_builder)
+                  expected = {
+                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    end_date: "today",
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                  }
+                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                end
+              end
+
+              sub_test_case "end_date is given as nDaysAgo" do
+                setup do
+                  @config[:start_date] = "2000-01-01"
+                  @config[:end_date] = "10DaysAgo"
+                end
+
+                test "config_diff end_date won't modify" do
+                  latest_time = Time.parse("2000-01-07")
+                  plugin = Plugin.new(config, nil, nil, @page_builder)
+                  expected = {
+                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                  }
+                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                end
+              end
+            end
+          end
+
+          sub_test_case "ga:date" do
+            setup do
+              conf = valid_config["in"]
+              conf["time_series"] = "ga:date"
+              @config = embulk_config(conf)
+            end
+
+            sub_test_case "no records fetched" do
+              test "config_diff will keep previous" do
+                plugin = Plugin.new(config, nil, nil, @page_builder)
+                expected = {
+                  start_date: task["start_date"],
+                  end_date: task["end_date"],
+                  last_record_time: task["last_record_time"],
+                }
+                assert_equal expected, plugin.calculate_next_times(nil)
+              end
+            end
+
+            sub_test_case "updated" do
+              sub_test_case "end_date is given as YYYY-MM-DD" do
+                setup do
+                  @config[:start_date] = "2000-01-01"
+                  @config[:end_date] = "2000-01-05"
+                end
+
+                test "config_diff will modify" do
+                  latest_time = Time.parse("2000-01-07")
+                  plugin = Plugin.new(config, nil, nil, @page_builder)
+                  expected = {
+                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    end_date: "today",
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                  }
+                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                end
+              end
+
+              sub_test_case "end_date is given as nDaysAgo" do
+                setup do
+                  @config[:start_date] = "2000-01-01"
+                  @config[:end_date] = "10DaysAgo"
+                end
+
+                test "config_diff end_date won't modify" do
+                  latest_time = Time.parse("2000-01-07")
+                  plugin = Plugin.new(config, nil, nil, @page_builder)
+                  expected = {
+                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                  }
+                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                end
+              end
+            end
+          end
+
+          def task
+            Plugin.task_from_config(@config)
+          end
+
+          def config
+            @config
           end
         end
 

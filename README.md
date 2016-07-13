@@ -15,8 +15,10 @@ Embulk input plugin for Google Analytics reports.
 - **time_series**: Only `ga:dateHour` or `ga:date` (string, required)
 - **dimensions**: Target dimensions (array, default: `[]` )
 - **metrics**: Target metrics (array, default: `[]` )
-- **start_date**: Target report start date (string, default: [7 days ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
-- **end_date**: Target report end date (string, default: [1 day ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
+- **start_date**: Target report start date. Valid format is "YYYY-MM-DD". (string, default: [7 days ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
+- **end_date**: Target report end date. Valid format is "YYYY-MM-DD". (string, default: [1 day ago](https://developers.google.com/analytics/devguides/reporting/core/v4/rest/v4/reports/batchGet#reportrequest))
+- **incremental**: `true` for generate "config_diff" with `embulk run -c config.diff` (bool, default: true)
+- **last_record_time**: Ignore fetched records until this time. Mainly for incremental:true. (string, default: nil)
 - **retry_limit**: Try to retry this times (integer, default: 5)
 - **retry_initial_wait_sec**: Wait seconds for exponential backoff initial value (integer, default: 2)
 
@@ -42,6 +44,16 @@ From: <https://developers.google.com/identity/protocols/OAuth2ServiceAccount>
 
 Screenshot: ![Service Account](./service_account.png)
 
+## Why the result doesn't match with web interface?
+
+Google Reporting API uses "sampling" data.
+
+- https://developers.google.com/analytics/devguides/reporting/core/v4/basics#sampling
+- https://support.google.com/analytics/answer/2637192
+
+That means sometimes result will be unmatched with Google Analytics web interface, and the result is based on sampled data, not all of raw data. This is a Google API's limitation.
+
+Currently a sampling level supported by this plugin is DEFAULT only. Let us know if you want to use other sampling level (SMALL or LARGE).
 
 ## Example
 

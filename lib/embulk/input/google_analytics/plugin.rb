@@ -42,7 +42,7 @@ module Embulk
         def self.resume(task, columns, count, &control)
           task_reports = yield(task, columns, count)
 
-          next_config_diff = {}
+          next_config_diff = task_reports.first
           return next_config_diff
         end
 
@@ -56,6 +56,8 @@ module Embulk
             "time_series" => config.param("time_series", :string),
             "start_date" => config.param("start_date", :string, default: nil),
             "end_date" => config.param("end_date", :string, default: nil),
+            "incremental" => config.param("incremental", :bool, default: true),
+            "last_record_time" => config.param("last_record_time", :string, default: nil),
             "retry_limit" => config.param("retry_limit", :integer, default: 5),
             "retry_initial_wait_sec" => config.param("retry_initial_wait_sec", :integer, default: 2),
           }
@@ -81,14 +83,28 @@ module Embulk
           client = Client.new(task, preview?)
           columns = self.class.columns_from_task(task)
 
+          last_record_time = task["last_record_time"] ? Time.parse(task["last_record_time"]) : nil
+
+          latest_time_series = nil
           client.each_report_row do |row|
+            time = row[task["time_series"]]
+            next if last_record_time && time <= last_record_time
+
             values = row.values_at(*columns)
             page_builder.add values
+
+            latest_time_series = [
+              latest_time_series,
+              time,
+            ].compact.max
           end
           page_builder.finish
 
-          task_report = {}
-          return task_report
+          if task["incremental"]
+            calculate_next_times(latest_time_series)
+          else
+            {}
+          end
         end
 
         def preview?
@@ -97,6 +113,49 @@ module Embulk
           false
         end
 
+        def calculate_next_times(fetched_latest_time)
+          task_report = {}
+
+          if fetched_latest_time
+            task_report[:start_date] = fetched_latest_time.strftime("%Y-%m-%d")
+
+            # if end_date specified as statically YYYY-MM-DD, it will be conflict with start_date (end_date < start_date)
+            # Modify it as "today" to be safe
+            if task["end_date"].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)
+              task_report[:end_date] = "today" # "today" means now. running at 03:30 AM, will got 3 o'clock data.
+            end
+
+            # "start_date" format is YYYY-MM-DD, but ga:dateHour will return records by hourly.
+            # If run at 2016-07-03 05:00:00, start_date will set "2016-07-03" and got records until 2016-07-03 05:00:00.
+            # Then next run at 2016-07-04 05:00, will got records between 2016-07-03 00:00:00 and 2016-07-04 05:00:00.
+            # It will evantually duplicated between 2016-07-03 00:00:00 and 2016-07-03 05:00:00
+            #
+            #           Date|        2016-07-03      |   2016-07-04
+            #           Hour|    5                   |    5
+            # 1st run ------|----|                   |
+            # 2nd run       |------------------------|-----
+            #               ^^^^^ duplicated
+            #
+            # "last_record_time" option solves that problem
+            #
+            #           Date|        2016-07-03      |   2016-07-04
+            #           Hour|    5                   |    5
+            # 1st run ------|----|                   |
+            # 2nd run       #####|-------------------|-----
+            #               ^^^^^ ignored (skipped)
+            #
+            task_report[:last_record_time] = fetched_latest_time.strftime("%Y-%m-%d %H:%M:%S %z")
+          else
+            # no records fetched, don't modify config_diff
+            task_report = {
+              start_date: task["start_date"],
+              end_date: task["end_date"],
+              last_record_time: task["last_record_time"],
+            }
+          end
+
+          task_report
+        end
       end
     end
   end
