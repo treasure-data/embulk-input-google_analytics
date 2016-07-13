@@ -120,8 +120,9 @@ module Embulk
             task_report[:start_date] = fetched_latest_time.strftime("%Y-%m-%d")
 
             # if end_date specified as statically YYYY-MM-DD, it will be conflict with start_date (end_date < start_date)
-            # Modify it as "today" to be safe
-            if task["end_date"].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)
+            # Or when end_date is nil, only start_date will be filled on next run but it is illegal API request.
+            # Modify end_date as "today" to be safe
+            if task["end_date"].nil? || task["end_date"].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)
               task_report[:end_date] = "today" # "today" means now. running at 03:30 AM, will got 3 o'clock data.
             end
 
