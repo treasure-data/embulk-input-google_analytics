@@ -1,3 +1,6 @@
+## 0.1.3 - 2016-08-15
+* Use net/http to avoid TLS error [#8](https://github.com/treasure-data/embulk-input-google_analytics/pull/8)
+
 ## 0.1.2 - 2016-07-13
 
 * Fix when `end_date` is nil [#7](https://github.com/treasure-data/embulk-input-google_analytics/pull/7)
