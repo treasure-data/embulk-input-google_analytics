@@ -271,7 +271,8 @@ module Embulk
         sub_test_case "each_report_row" do
           setup do
             conf = valid_config["in"]
-            @client = Client.new(task(embulk_config(conf)))
+            @task = task(embulk_config(conf))
+            @client = Client.new(@task)
             stub(@client).get_profile { {timezone: "Asia/Tokyo"} }
             @logger = Logger.new(File::NULL)
             stub(Embulk).logger { @logger }
@@ -290,18 +291,21 @@ module Embulk
                 "ga:browser" => "curl",
                 "ga:visits" => "1",
                 "ga:pageviews" => "1",
+                "view_id" => @task["view_id"],
               },
               {
                 "ga:dateHour" => @client.time_parse_with_profile_timezone("2016060121"),
                 "ga:browser" => "curl",
                 "ga:visits" => "2",
                 "ga:pageviews" => "2",
+                "view_id" => @task["view_id"],
               },
               {
                 "ga:dateHour" => @client.time_parse_with_profile_timezone("2016060122"),
                 "ga:browser" => "curl",
                 "ga:visits" => "3",
                 "ga:pageviews" => "3",
+                "view_id" => @task["view_id"],
               },
             ]
             assert_equal expected, fetched_rows

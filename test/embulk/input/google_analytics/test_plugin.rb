@@ -40,6 +40,7 @@ module Embulk
               Embulk::Column.new(nil, "browser", :string),
               Embulk::Column.new(nil, "visits", :long),
               Embulk::Column.new(nil, "pageviews", :long),
+              Embulk::Column.new(nil, "view_id", :string),
             ]
             mock(Plugin).resume(anything, columns, 1)
             Plugin.transaction(embulk_config(valid_config["in"]))
@@ -115,6 +116,7 @@ module Embulk
                 Column.new(nil, "ctr", :double),
                 Column.new(nil, "visits", :long),
                 Column.new(nil, "items_per_purchase", :double),
+                Column.new(nil, "view_id", :string),
               ]
 
               mock(Plugin).resume(anything, expected_columns, anything)
@@ -152,7 +154,7 @@ module Embulk
                   end
                 end
 
-                mock(@page_builder).add([time, "wget", 3, 4])
+                mock(@page_builder).add([time, "wget", 3, 4, nil]) # nil for view_id
                 mock(@page_builder).finish
                 @plugin.run
               end
@@ -209,7 +211,7 @@ module Embulk
                   end
                 end
 
-                mock(@page_builder).add([time, "wget", 3, 4])
+                mock(@page_builder).add([time, "wget", 3, 4, nil]) # nil for view_id
                 mock(@page_builder).finish
                 @plugin.run
               end

@@ -36,6 +36,8 @@ module Embulk
             Column.new(nil, canonicalize_column_name(col_name), col_type)
           end
 
+          columns << Column.new(nil, "view_id", :string)
+
           resume(task, columns, 1, &control)
         end
 
@@ -81,7 +83,7 @@ module Embulk
 
         def run
           client = Client.new(task, preview?)
-          columns = self.class.columns_from_task(task)
+          columns = self.class.columns_from_task(task) + ["view_id"]
 
           last_record_time = task["last_record_time"] ? Time.parse(task["last_record_time"]) : nil
 
