@@ -1,3 +1,6 @@
+## 0.1.4 - 2016-08-19
+* Always add `view_id` into records [#9](https://github.com/treasure-data/embulk-input-google_analytics/pull/9)
+
 ## 0.1.3 - 2016-08-15
 * Use net/http to avoid TLS error [#8](https://github.com/treasure-data/embulk-input-google_analytics/pull/8)
 
