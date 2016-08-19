@@ -54,6 +54,7 @@ module Embulk
               raw_time = format_row[task["time_series"]]
               next if too_early_data?(raw_time)
               format_row[task["time_series"]] = time_parse_with_profile_timezone(raw_time)
+              format_row["view_id"] = view_id
               block.call format_row
             end
 
