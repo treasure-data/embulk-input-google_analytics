@@ -17,16 +17,22 @@ module Embulk
             col_info = columns_list.find{|col| col[:id] == col_name}
             raise ConfigError.new("Unknown metric/dimension '#{col_name}'") unless col_info
 
-            col_type = 
-              case col_info[:attributes][:dataType]
-              when "STRING"
+            col_type =
+              if col_info[:attributes]
+                # standard dimension
+                case col_info[:attributes][:dataType]
+                when "STRING"
+                  :string
+                when "INTEGER"
+                  :long
+                when "PERCENT", "FLOAT", "CURRENCY"
+                  :double
+                when "TIME"
+                  :timestamp
+                end
+              else
+                # custom dimension
                 :string
-              when "INTEGER"
-                :long
-              when "PERCENT", "FLOAT", "CURRENCY"
-                :double
-              when "TIME"
-                :timestamp
               end
 
             # time_series column should be timestamp
