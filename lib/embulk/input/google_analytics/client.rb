@@ -122,11 +122,24 @@ module Embulk
         end
 
         def get_columns_list
+          get_custom_dimensions + get_metadata_columns
+        end
+
+        def get_metadata_columns
           # https://developers.google.com/analytics/devguides/reporting/metadata/v3/reference/metadata/columns/list
           service = Google::Apis::AnalyticsV3::AnalyticsService.new
           service.authorization = auth
           retryer.with_retry do
             service.list_metadata_columns("ga").to_h[:items]
+          end
+        end
+
+        def get_custom_dimensions
+          # https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/customDimensions/list
+          service = Google::Apis::AnalyticsV3::AnalyticsService.new
+          service.authorization = auth
+          retryer.with_retry do
+            service.list_custom_dimensions(get_profile[:account_id], get_profile[:web_property_id]).to_h[:items]
           end
         end
 
