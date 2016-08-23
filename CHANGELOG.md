@@ -1,3 +1,6 @@
+## 0.1.5 - 2016-08-23
+* Enable custom dimensions [#10](https://github.com/treasure-data/embulk-input-google_analytics/pull/10)
+
 ## 0.1.4 - 2016-08-19
 * Always add `view_id` into records [#9](https://github.com/treasure-data/embulk-input-google_analytics/pull/9)
 
