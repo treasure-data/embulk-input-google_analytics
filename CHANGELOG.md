@@ -1,3 +1,6 @@
+## 0.1.6 - 2016-08-29
+* Add no-op guessing to avoid guess error [#11](https://github.com/treasure-data/embulk-input-google_analytics/pull/11)
+
 ## 0.1.5 - 2016-08-23
 * Enable custom dimensions [#10](https://github.com/treasure-data/embulk-input-google_analytics/pull/10)
 
