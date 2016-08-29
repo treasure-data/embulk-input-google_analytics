@@ -84,6 +84,11 @@ module Embulk
           name.gsub(/^ga:/, "").gsub(/[A-Z]+/, "_\\0").gsub(/^_/, "").downcase
         end
 
+        def self.guess(config)
+          Embulk.logger.warn "Don't needed to guess for this plugin"
+          return {}
+        end
+
         def init
         end
 
