@@ -90,6 +90,10 @@ module Embulk
         end
 
         def init
+          # PLT-6753
+          if task["start_date"] && !task["end_date"]
+            task["end_date"] = "today"
+          end
         end
 
         def run
@@ -137,6 +141,8 @@ module Embulk
             # Modify end_date as "today" to be safe
             if task["end_date"].nil? || task["end_date"].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)
               task_report[:end_date] = "today" # "today" means now. running at 03:30 AM, will got 3 o'clock data.
+            else
+              task_report[:end_date] = task["end_date"]
             end
 
             # "start_date" format is YYYY-MM-DD, but ga:dateHour will return records by hourly.

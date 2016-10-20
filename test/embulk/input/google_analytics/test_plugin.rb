@@ -319,6 +319,7 @@ module Embulk
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
                     start_date: latest_time.strftime("%Y-%m-%d"),
+                    end_date: @config[:end_date],
                     last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
                   assert_equal expected, plugin.calculate_next_times(latest_time)
@@ -394,6 +395,7 @@ module Embulk
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
                     start_date: latest_time.strftime("%Y-%m-%d"),
+                    end_date: @config[:end_date],
                     last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
                   assert_equal expected, plugin.calculate_next_times(latest_time)
