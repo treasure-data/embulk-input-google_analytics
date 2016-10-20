@@ -90,6 +90,10 @@ module Embulk
         end
 
         def init
+          # PLT-6753
+          if task["start_date"] && !task["end_date"]
+            task["end_date"] = "today"
+          end
         end
 
         def run
