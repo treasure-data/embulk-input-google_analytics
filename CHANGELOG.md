@@ -1,3 +1,6 @@
+## 0.1.7 - 2016-10-20
+* Fix to generate `end_date` on config_diff  [#12](https://github.com/treasure-data/embulk-input-google_analytics/pull/12)
+
 ## 0.1.6 - 2016-08-29
 * Add no-op guessing to avoid guess error [#11](https://github.com/treasure-data/embulk-input-google_analytics/pull/11)
 
