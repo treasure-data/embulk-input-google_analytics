@@ -25,10 +25,8 @@ module Embulk
                   :string
                 when "INTEGER"
                   :long
-                when "PERCENT", "FLOAT", "CURRENCY"
+                when "PERCENT", "FLOAT", "CURRENCY", "TIME"
                   :double
-                when "TIME"
-                  :timestamp
                 end
               else
                 # custom dimension

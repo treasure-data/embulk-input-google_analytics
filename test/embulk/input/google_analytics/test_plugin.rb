@@ -111,7 +111,7 @@ module Embulk
               ]
               expected_columns = [
                 Column.new(nil, "date_hour", :timestamp),
-                Column.new(nil, "session_duration", :timestamp),
+                Column.new(nil, "session_duration", :double),
                 Column.new(nil, "cpm", :double),
                 Column.new(nil, "ctr", :double),
                 Column.new(nil, "visits", :long),
