@@ -1,3 +1,6 @@
+## 0.1.8 - 2016-11-09
+* TIME column should be double, not timestamp. e.g. sessionDuration (thx @kazuya030) [#13](https://github.com/treasure-data/embulk-input-google_analytics/pull/13) [#15](https://github.com/treasure-data/embulk-input-google_analytics/pull/15)
+
 ## 0.1.7 - 2016-10-20
 * Fix to generate `end_date` on config_diff  [#12](https://github.com/treasure-data/embulk-input-google_analytics/pull/12)
 
