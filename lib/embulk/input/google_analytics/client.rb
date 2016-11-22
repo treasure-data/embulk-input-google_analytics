@@ -122,7 +122,35 @@ module Embulk
         end
 
         def get_columns_list
-          get_custom_dimensions + get_metadata_columns
+          columns = get_custom_dimensions + get_metadata_columns
+          canonical_column_names(columns)
+        end
+
+        def canonical_column_names(columns)
+          result = []
+          columns.each do |col|
+            if col[:id].match(/XX$/)
+              # for such columns:
+              # https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=content_grouping
+              # https://developers.google.com/analytics/devguides/reporting/metadata/v3/devguide#attributes
+              min = [
+                col[:attributes][:minTemplateIndex],
+                col[:attributes][:premiumMinTemplateIndex],
+              ].compact.min
+              max = [
+                col[:attributes][:maxTemplateIndex],
+                col[:attributes][:premiumMaxTemplateIndex],
+              ].compact.max
+
+              min.upto(max) do |n|
+                actual_id = col[:id].gsub(/XX$/, n.to_s)
+                result << col.merge(id: actual_id)
+              end
+            else
+              result << col
+            end
+          end
+          result
         end
 
         def get_metadata_columns
