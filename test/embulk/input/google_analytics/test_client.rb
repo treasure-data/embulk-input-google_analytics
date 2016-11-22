@@ -12,6 +12,28 @@ module Embulk
         include OverrideAssertRaise
         include FixtureHelper
 
+        sub_test_case "canonical_column_names" do
+          setup do
+            conf = valid_config["in"]
+            @task = task(embulk_config(conf))
+            @client = Client.new(@task)
+          end
+
+          test "XX column names should be expanded" do
+            columns = @client.canonical_column_names([
+              {id: "foo"},
+              {id: "barXX", attributes: {minTemplateIndex: 1, maxTemplateIndex: 3}},
+              {id: "bazXX", attributes: {minTemplateIndex: 1, maxTemplateIndex: 3, premiumMinTemplateIndex: 1, premiumMaxTemplateIndex: 5}},
+            ])
+            expected_names = %w(
+              foo bar1 bar2 bar3
+              baz1 baz2 baz3 baz4 baz5
+            )
+
+            assert_equal expected_names, columns.map{|col| col[:id]}
+          end
+        end
+
         sub_test_case "get_profile" do
           setup do
             conf = valid_config["in"]
