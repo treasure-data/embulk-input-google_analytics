@@ -1,3 +1,6 @@
+## 0.1.10 - 2016-12-08
+* Logging unexpected time string [#17](https://github.com/treasure-data/embulk-input-google_analytics/pull/17)
+
 ## 0.1.9 - 2016-11-22
 * Support 'foobarXX' column names [#16](https://github.com/treasure-data/embulk-input-google_analytics/pull/16)
 
