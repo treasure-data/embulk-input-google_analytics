@@ -172,6 +172,20 @@ module Embulk
               assert_equal Time.parse("2016-01-01 22:00:00 -08:00"), time
             end
 
+            sub_test_case "Logging invalid values" do
+              setup do
+                @logger = Logger.new(File::NULL)
+                stub(Embulk).logger { @logger }
+              end
+
+              test "empty" do
+                mock(@logger).warn(%Q|Failed to parse ga:dateHour data. The value is ''(String) and it doesn't match with '%Y%m%d%H'.|)
+                assert_raise do
+                  @client.time_parse_with_profile_timezone("")
+                end
+              end
+            end
+
             def time_series
               "ga:dateHour"
             end
@@ -190,6 +204,20 @@ module Embulk
             test "not in dst" do
               time = @client.time_parse_with_profile_timezone("2016010122")
               assert_equal Time.parse("2016-01-01 00:00:00 PST"), time
+            end
+
+            sub_test_case "Logging invalid values" do
+              setup do
+                @logger = Logger.new(File::NULL)
+                stub(Embulk).logger { @logger }
+              end
+
+              test "empty" do
+                mock(@logger).warn(%Q|Failed to parse ga:date data. The value is ''(String) and it doesn't match with '%Y%m%d'.|)
+                assert_raise do
+                  @client.time_parse_with_profile_timezone("")
+                end
+              end
             end
 
             def time_series
