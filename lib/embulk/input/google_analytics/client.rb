@@ -52,6 +52,7 @@ module Embulk
               met = metrics.zip(row[:metrics].first[:values]).to_h
               format_row = dim.merge(met)
               raw_time = format_row[task["time_series"]]
+              optimize_value_by_query_limit?(raw_time)
               next if too_early_data?(raw_time)
               format_row[task["time_series"]] = time_parse_with_profile_timezone(raw_time)
               format_row["view_id"] = view_id
@@ -89,6 +90,14 @@ module Embulk
           Embulk.logger.debug "Fetching profile from API"
           retryer.with_retry do
             service.list_profiles("~all", "~all")
+          end
+        end
+
+        def optimize_value_by_query_limit?(data)
+          # For any date range, Analytics returns a maximum of 1 million rows for the report. Rows in excess of 1 million are rolled-up into an (other) row.
+          # See more details: https://support.google.com/analytics/answer/1009671
+          if data.to_s == "(other)"
+            raise Embulk::DataError.new('Stop fetching data from Analytics because over 1M data fetching was limited. Please reduce data range to fetch data according to this article: https://support.google.com/analytics/answer/1009671.')
           end
         end
 
