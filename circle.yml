@@ -2,7 +2,7 @@ machine:
   java:
     version: oraclejdk8
   ruby:
-    version: jruby-9.0.4.0
+    version: jruby-9.1.5.0
   environment:
     JRUBY_OPTS: "-Xcli.debug=true --debug"
 
