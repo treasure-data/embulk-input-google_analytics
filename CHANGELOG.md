@@ -1,3 +1,6 @@
+## 0.1.11 - 2017-01-16
+* Throw DataError if '(other)' values appear as ga:dateHour as ga:date or ga:dateHour [#18](https://github.com/treasure-data/embulk-input-google_analytics/pull/18)
+
 ## 0.1.10 - 2016-12-08
 * Logging unexpected time string [#17](https://github.com/treasure-data/embulk-input-google_analytics/pull/17)
 
