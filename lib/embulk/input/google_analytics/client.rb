@@ -142,7 +142,7 @@ module Embulk
         def canonical_column_names(columns)
           result = []
           columns.each do |col|
-            if col[:id].match(/XX$/)
+            if col[:id].match(/XX/)
               # for such columns:
               # https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=content_grouping
               # https://developers.google.com/analytics/devguides/reporting/metadata/v3/devguide#attributes
@@ -156,7 +156,7 @@ module Embulk
               ].compact.max
 
               min.upto(max) do |n|
-                actual_id = col[:id].gsub(/XX$/, n.to_s)
+                actual_id = col[:id].gsub(/XX/, n.to_s)
                 result << col.merge(id: actual_id)
               end
             else
