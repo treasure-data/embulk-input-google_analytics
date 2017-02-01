@@ -1,3 +1,6 @@
+## 0.1.12 - 2017-01-31
+* Support 'fooXXbar' column names [#19](https://github.com/treasure-data/embulk-input-google_analytics/pull/19)
+
 ## 0.1.11 - 2017-01-16
 * Throw DataError if '(other)' values appear as ga:dateHour as ga:date or ga:dateHour [#18](https://github.com/treasure-data/embulk-input-google_analytics/pull/18)
 
