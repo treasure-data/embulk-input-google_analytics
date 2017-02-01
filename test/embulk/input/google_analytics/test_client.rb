@@ -22,12 +22,13 @@ module Embulk
           test "XX column names should be expanded" do
             columns = @client.canonical_column_names([
               {id: "foo"},
-              {id: "barXX", attributes: {minTemplateIndex: 1, maxTemplateIndex: 3}},
-              {id: "bazXX", attributes: {minTemplateIndex: 1, maxTemplateIndex: 3, premiumMinTemplateIndex: 1, premiumMaxTemplateIndex: 5}},
+              {id: "baXXr", attributes: {minTemplateIndex: 1, maxTemplateIndex: 3}},
+              {id: "bazXX", attributes: {minTemplateIndex: 1, maxTemplateIndex: 3}},
+              {id: "jarXX", attributes: {minTemplateIndex: 1, maxTemplateIndex: 3, premiumMinTemplateIndex: 1, premiumMaxTemplateIndex: 5}},
             ])
             expected_names = %w(
-              foo bar1 bar2 bar3
-              baz1 baz2 baz3 baz4 baz5
+              foo ba1r ba2r ba3r baz1 baz2 baz3
+              jar1 jar2 jar3 jar4 jar5
             )
 
             assert_equal expected_names, columns.map{|col| col[:id]}
