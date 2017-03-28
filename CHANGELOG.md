@@ -1,3 +1,6 @@
+## 0.1.13 - 2017-03-28
+* Fixed bug `last_record_time` in `preview` mode [#20](https://github.com/treasure-data/embulk-input-google_analytics/pull/20)
+
 ## 0.1.12 - 2017-01-31
 * Support 'fooXXbar' column names [#19](https://github.com/treasure-data/embulk-input-google_analytics/pull/19)
 
