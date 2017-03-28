@@ -103,7 +103,7 @@ module Embulk
           latest_time_series = nil
           client.each_report_row do |row|
             time = row[task["time_series"]]
-            next if last_record_time && time <= last_record_time
+            next if !preview? && last_record_time && time <= last_record_time
 
             values = row.values_at(*columns)
             page_builder.add values
