@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "httpclient"
-  spec.add_dependency "google-api-client", "0.10.2"
+  spec.add_dependency "google-api-client", "0.10.1"
   spec.add_dependency "signet"
   spec.add_dependency "activesupport" # for Time.zone.parse, Time.zone.now
   spec.add_dependency "perfect_retry", "~> 0.5"
