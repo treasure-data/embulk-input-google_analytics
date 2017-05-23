@@ -11,7 +11,7 @@ Embulk input plugin for Google Analytics reports.
 ## Configuration
 
 - **json_key_content**: See example config.
-- **view_id**: View ID for target data. You can find it on [Google Analytics page (you need a permission to access Admin page](https://lucidpress.zendesk.com/hc/en-us/articles/207335356-Find-your-Google-Analytics-Tracking-ID-View-ID) (string, required)
+- **view_id**: View ID for target data. See [Get View ID](#get-view-id) (string, required)
 - **time_series**: Only `ga:dateHour` or `ga:date` (string, required)
 - **dimensions**: Target dimensions (array, default: `[]` )
 - **metrics**: Target metrics (array, default: `[]` )
@@ -21,6 +21,14 @@ Embulk input plugin for Google Analytics reports.
 - **last_record_time**: Ignore fetched records until this time. Mainly for incremental:true. (string, default: nil)
 - **retry_limit**: Try to retry this times (integer, default: 5)
 - **retry_initial_wait_sec**: Wait seconds for exponential backoff initial value (integer, default: 2)
+
+### Get View ID
+
+1. Go to the [Google Analytics sign in page](https://analytics.google.com/analytics/) and sign in.
+1. Click "Admin" tab at left below
+1. Select the "Property" using the drop-down menu below ‘Property’.
+1. Select ‘View Settings’ beneath ‘View’.
+1. The View ID for the selected property is listed first under ‘Basic Settings
 
 ### About `json_key_content` option.
 
