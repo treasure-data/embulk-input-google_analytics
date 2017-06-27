@@ -1,3 +1,7 @@
+## 0.1.14 - 2017-06-27
+
+* Fixed version of google-api-client [#26](https://github.com/treasure-data/embulk-input-google_analytics/pull/26)
+
 ## 0.1.13 - 2017-03-28
 * Fixed bug `last_record_time` in `preview` mode [#20](https://github.com/treasure-data/embulk-input-google_analytics/pull/20)
 
