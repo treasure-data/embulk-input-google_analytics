@@ -16,7 +16,10 @@ dependencies:
 test:
   override:
     - bundle exec rake cov
-
+notify:
+  webhooks:
+    - url: http://td-beda.herokuapp.com/circleci_callback
+    
 general:
   artifacts:
     - "coverage"
