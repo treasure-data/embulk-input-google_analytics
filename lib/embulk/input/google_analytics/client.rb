@@ -30,11 +30,6 @@ module Embulk
             result = get_reports(page_token)
             report = result.to_h[:reports].first
 
-            unless page_token
-              # display for first request only
-              Embulk.logger.info "Total: #{report[:data][:row_count]} rows. Fetched first response"
-            end
-
             if !report[:data].has_key?(:rows)
               Embulk.logger.warn "Result doesn't contain rows."
               break
