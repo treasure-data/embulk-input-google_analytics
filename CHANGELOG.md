@@ -1,3 +1,7 @@
+## 0.1.15 - 2017-11-29
+
+* Add explicit logging for the number of skipped records
+
 ## 0.1.14 - 2017-06-27
 
 * Fixed version of google-api-client [#26](https://github.com/treasure-data/embulk-input-google_analytics/pull/26)
