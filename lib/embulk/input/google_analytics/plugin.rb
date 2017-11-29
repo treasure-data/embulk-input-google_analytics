@@ -101,9 +101,14 @@ module Embulk
           last_record_time = task["last_record_time"] ? Time.parse(task["last_record_time"]) : nil
 
           latest_time_series = nil
+          skip_counter, total_counter = 0, 0
           client.each_report_row do |row|
             time = row[task["time_series"]]
-            next if !preview? && last_record_time && time <= last_record_time
+            total_counter += 1
+            if !preview? && last_record_time && time <= last_record_time
+              skip_counter += 1
+              next
+            end
 
             values = row.values_at(*columns)
             page_builder.add values
@@ -114,6 +119,12 @@ module Embulk
             ].compact.max
           end
           page_builder.finish
+
+          Embulk.logger.info "Total: #{total_counter} rows."
+          if skip_counter > 0
+            Embulk.logger.info "#{skip_counter} rows were ignored because the rows' date is " +
+                                   "before \"last_record_time\": #{last_record_time}."
+          end
 
           if task["incremental"]
             calculate_next_times(latest_time_series)
