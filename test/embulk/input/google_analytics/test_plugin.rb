@@ -2,6 +2,7 @@ require "embulk"
 Embulk.setup
 
 require "embulk/input/google_analytics"
+require "active_support/core_ext/time"
 require "override_assert_raise"
 require "fixture_helper"
 
@@ -11,7 +12,7 @@ module Embulk
       class TestPlugin < Test::Unit::TestCase
         include OverrideAssertRaise
         include FixtureHelper
-
+        DEFAULT_TIMEZONE = "America/Los_Angeles"
         sub_test_case ".transaction" do
           setup do
             any_instance_of(Client) do |klass|
@@ -266,6 +267,7 @@ module Embulk
 
         sub_test_case "calculate_next_times" do
           setup do
+            @timeparser = ActiveSupport::TimeZone["UTC"]
             @page_builder = Object.new
             @config = embulk_config(valid_config["in"])
           end
@@ -285,7 +287,7 @@ module Embulk
                   end_date: task["end_date"],
                   last_record_time: task["last_record_time"],
                 }
-                assert_equal expected, plugin.calculate_next_times(nil)
+                assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
               end
             end
 
@@ -297,14 +299,32 @@ module Embulk
                 end
 
                 test "config_diff will modify" do
-                  latest_time = Time.parse("2000-01-07")
+                  latest_time = parse_time("2000-01-07")
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
-                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    start_date: "2000-01-06",
                     end_date: "today",
                     last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
-                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                  assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, latest_time)
+                end
+              end
+              sub_test_case "system timezone is 1 day behind profile timezone" do
+                setup do
+                  @config[:start_date] = "2000-01-01"
+                  @config[:end_date] = "2000-01-05"
+                  @timeparser = ActiveSupport::TimeZone["Asia/Ho_Chi_Minh"]
+                end
+
+                test "config_diff will modify with end date set to correct timezone" do
+                  latest_time = parse_time("2000-01-07 00:00:00")
+                  plugin = Plugin.new(config, nil, nil, @page_builder)
+                  expected = {
+                    start_date: "2000-01-06",
+                    end_date: "today",
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                  }
+                  assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, latest_time)
                 end
               end
 
@@ -315,14 +335,14 @@ module Embulk
                 end
 
                 test "config_diff end_date won't modify" do
-                  latest_time = Time.parse("2000-01-07")
+                  latest_time = parse_time("2000-01-07")
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
-                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    start_date: "2000-01-06",
                     end_date: @config[:end_date],
                     last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
-                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                  assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, latest_time)
                 end
               end
             end
@@ -343,7 +363,7 @@ module Embulk
                   end_date: task["end_date"],
                   last_record_time: task["last_record_time"],
                 }
-                assert_equal expected, plugin.calculate_next_times(nil)
+                assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
               end
             end
 
@@ -355,15 +375,27 @@ module Embulk
                 end
 
                 test "config_diff will modify" do
-                  latest_time = Time.parse("2000-01-07")
+                  latest_time = parse_time("2000-01-07")
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
-                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    start_date: "2000-01-06",
                     end_date: "today",
                     last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
-                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                  assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, latest_time)
                 end
+
+                test "config_diff will modify" do
+                  latest_time = parse_time("2000-01-07")
+                  plugin = Plugin.new(config, nil, nil, @page_builder)
+                  expected = {
+                    start_date: "2000-01-06",
+                    end_date: "today",
+                    last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
+                  }
+                  assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, latest_time)
+                end
+
               end
 
               sub_test_case "end_date is nil" do
@@ -373,14 +405,14 @@ module Embulk
                 end
 
                 test "config_diff will modify" do
-                  latest_time = Time.parse("2000-01-07")
+                  latest_time = parse_time("2000-01-07")
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
-                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    start_date: "2000-01-06",
                     end_date: "today",
                     last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
-                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                  assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, latest_time)
                 end
               end
 
@@ -391,14 +423,14 @@ module Embulk
                 end
 
                 test "config_diff end_date won't modify" do
-                  latest_time = Time.parse("2000-01-07")
+                  latest_time = parse_time("2000-01-07")
                   plugin = Plugin.new(config, nil, nil, @page_builder)
                   expected = {
-                    start_date: latest_time.strftime("%Y-%m-%d"),
+                    start_date: "2000-01-06",
                     end_date: @config[:end_date],
                     last_record_time: latest_time.strftime("%Y-%m-%d %H:%M:%S %z"),
                   }
-                  assert_equal expected, plugin.calculate_next_times(latest_time)
+                  assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, latest_time)
                 end
               end
             end
@@ -411,6 +443,11 @@ module Embulk
           def config
             @config
           end
+
+          def parse_time(time_string)
+            @timeparser.parse(time_string)
+          end
+
         end
 
         def valid_config

@@ -127,7 +127,7 @@ module Embulk
           end
 
           if task["incremental"]
-            calculate_next_times(latest_time_series)
+            calculate_next_times(client.get_profile[:timezone], latest_time_series)
           else
             {}
           end
@@ -139,11 +139,12 @@ module Embulk
           false
         end
 
-        def calculate_next_times(fetched_latest_time)
+        def calculate_next_times(client_time_zone, fetched_latest_time)
           task_report = {}
-
           if fetched_latest_time
-            task_report[:start_date] = fetched_latest_time.strftime("%Y-%m-%d")
+            # Convert fetched_last_time to user timezone
+            timezone = ActiveSupport::TimeZone[client_time_zone]
+            task_report[:start_date] = timezone.nil? ? fetched_latest_time.strftime("%Y-%m-%d") : timezone.parse(fetched_latest_time.to_s).strftime("%Y-%m-%d")
 
             # if end_date specified as statically YYYY-MM-DD, it will be conflict with start_date (end_date < start_date)
             # Or when end_date is nil, only start_date will be filled on next run but it is illegal API request.
