@@ -1,7 +1,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "embulk-input-google_analytics"
-  spec.version       = "0.1.15"
+  spec.version       = "0.1.16"
   spec.authors       = ["uu59"]
   spec.summary       = "Google Analytics input plugin for Embulk"
   spec.description   = "Loads records from Google Analytics."

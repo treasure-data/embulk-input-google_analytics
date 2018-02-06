@@ -1,3 +1,8 @@
+#0.1.16 - 2018-02-06
+
+* Use user profile timezone when format next from_date 
+
+
 ## 0.1.15 - 2017-11-29
 
 * Add explicit logging for the number of skipped records
