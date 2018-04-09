@@ -107,8 +107,7 @@ module Embulk
           parts = Date._strptime(time_string, date_format)
           unless parts
             # strptime was failed. Google API returns unexpected date string.
-            Embulk.logger.warn("Failed to parse #{task["time_series"]} data. The value is '#{time_string}'(#{time_string.class}) and it doesn't match with '#{date_format}'.")
-            raise Embulk::DataError.new("Can't parse raw time returned from Google API, raw time is #{time_string}, expected format #{date_format}")
+            raise Embulk::DataError.new("Failed to parse #{task["time_series"]} data. The value is '#{time_string}'(#{time_string.class}) and it doesn't match with '#{date_format}'.")
           end
 
           swap_time_zone do

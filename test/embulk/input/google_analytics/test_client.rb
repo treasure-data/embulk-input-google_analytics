@@ -180,8 +180,7 @@ module Embulk
               end
 
               test "empty" do
-                mock(@logger).warn(%Q|Failed to parse ga:dateHour data. The value is ''(String) and it doesn't match with '%Y%m%d%H'.|)
-                assert_raise Embulk::DataError.new("Can't parse raw time returned from Google API, raw time is , expected format %Y%m%d%H") do
+                assert_raise Embulk::DataError.new(%Q|Failed to parse ga:dateHour data. The value is ''(String) and it doesn't match with '%Y%m%d%H'.|) do
                   @client.time_parse_with_profile_timezone("")
                 end
               end
@@ -214,8 +213,7 @@ module Embulk
               end
 
               test "empty" do
-                mock(@logger).warn(%Q|Failed to parse ga:date data. The value is ''(String) and it doesn't match with '%Y%m%d'.|)
-                assert_raise do
+                assert_raise Embulk::DataError.new(%Q|Failed to parse ga:date data. The value is ''(String) and it doesn't match with '%Y%m%d'.|) do
                   @client.time_parse_with_profile_timezone("")
                 end
               end
