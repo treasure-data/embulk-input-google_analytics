@@ -111,7 +111,8 @@ module Embulk
           end
 
           swap_time_zone do
-            Time.zone.local(*parts.values_at(:year, :mon, :mday, :hour)).to_time
+            local_time = Time.zone.local(*parts.values_at(:year, :mon, :mday, :hour))
+            local_time.getlocal(local_time.utc_offset)
           end
         end
 
