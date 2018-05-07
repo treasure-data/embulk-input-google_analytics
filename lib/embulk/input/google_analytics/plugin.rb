@@ -3,6 +3,8 @@ module Embulk
     module GoogleAnalytics
       class Plugin < InputPlugin
         ::Embulk::Plugin.register_input("google_analytics", self)
+        AUTH_TYPE_JSON_KEY = 'json_key'.freeze
+        AUTH_TYPE_REFRESH_TOKEN = 'refresh_token'.freeze
 
         # https://developers.google.com/analytics/devguides/reporting/core/dimsmets
 
@@ -11,6 +13,15 @@ module Embulk
           unless %w(ga:date ga:dateHour).include?(task["time_series"])
             raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour' or 'ga:date'")
           end
+
+          raise ConfigError.new("Unknown Authentication method '#{task['auth_method']}'.") unless task['auth_method']
+
+          if task['auth_method'] == Plugin::AUTH_TYPE_REFRESH_TOKEN
+            unless task['client_id'] && task['client_secret'] && task['refresh_token']
+              raise ConfigError.new("client_id, client_secret and refresh_token are required when using Oauth authentication")
+            end
+          end
+
           columns_list = Client.new(task).get_columns_list
 
           columns = columns_from_task(task).map do |col_name|
@@ -53,8 +64,16 @@ module Embulk
         end
 
         def self.task_from_config(config)
-          json_key_content = config.param("json_key_content", :string)
-          {
+          refresh_token = config.param('refresh_token', :string, default: nil)
+          json_key_content = config.param("json_key_content", :string, default: nil)
+
+          auth_method = Plugin::AUTH_TYPE_REFRESH_TOKEN if refresh_token
+          auth_method = Plugin::AUTH_TYPE_JSON_KEY if json_key_content && auth_method == nil
+            {
+            "auth_method" => auth_method,
+            "client_id" => config.param("client_id", :string, default: nil),
+            "client_secret" => config.param("client_secret", :string, default: nil),
+            "refresh_token" => refresh_token,
             "json_key_content" => json_key_content,
             "view_id" => config.param("view_id", :string),
             "dimensions" => config.param("dimensions", :array, default: []),

@@ -208,10 +208,22 @@ module Embulk
 
         def auth
           retryer.with_retry do
-            Google::Auth::ServiceAccountCredentials.make_creds(
-              json_key_io: StringIO.new(task["json_key_content"]),
-              scope: "https://www.googleapis.com/auth/analytics.readonly"
-            )
+            case task['auth_method']
+            when Plugin::AUTH_TYPE_JSON_KEY
+              Google::Auth::ServiceAccountCredentials.make_creds(
+                json_key_io: StringIO.new(task["json_key_content"]),
+                scope: "https://www.googleapis.com/auth/analytics.readonly"
+              )
+            when Plugin::AUTH_TYPE_REFRESH_TOKEN
+              Google::Auth::UserRefreshCredentials.new(
+                'token_credential_uri': Google::Auth::UserRefreshCredentials::TOKEN_CRED_URI,
+                'client_id': task['client_id'],
+                'client_secret': task['client_secret'],
+                'refresh_token': task['refresh_token']
+              )
+            else
+              raise Embulk::ConfigError.new("Unknown Authentication method: '#{task['auth_method']}'.")
+            end
           end
         rescue Google::Apis::AuthorizationError => e
           raise ConfigError.new(e.message)
