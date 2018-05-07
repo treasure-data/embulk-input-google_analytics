@@ -75,6 +75,46 @@ module Embulk
               end
             end
 
+            test "missing client_id params for oauth" do
+              conf = valid_config_oauth["in"]
+              conf.delete("client_id")
+              assert_raise(Embulk::ConfigError.new(oauth_expect_message)) do
+                Plugin.transaction(embulk_config(conf))
+              end
+            end
+
+            test "missing client_secret params for oauth" do
+              conf = valid_config_oauth["in"]
+              conf.delete('client_secret')
+              assert_raise(Embulk::ConfigError.new(oauth_expect_message)) do
+                Plugin.transaction(embulk_config(conf))
+              end
+            end
+
+            test "missing refresh_token params for oauth" do
+              conf = valid_config_oauth["in"]
+              conf.delete("refresh_token")
+              assert_raise(Embulk::ConfigError.new(unknown_auth_method_message)) do
+                Plugin.transaction(embulk_config(conf))
+              end
+            end
+
+            test "missing json_key_content params for oauth" do
+              conf = valid_config["in"]
+              conf.delete("json_key_content")
+              assert_raise(Embulk::ConfigError.new(unknown_auth_method_message)) do
+                Plugin.transaction(embulk_config(conf))
+              end
+            end
+
+            def unknown_auth_method_message
+              "Unknown Authentication method ''."
+            end
+
+            def oauth_expect_message
+              "client_id, client_secret and refresh_token are required when using Oauth authentication"
+            end
+
             def unknown_col_name
               "ga:foooooo"
             end
@@ -456,6 +496,10 @@ module Embulk
 
         def embulk_config(hash)
           Embulk::DataSource.new(hash)
+        end
+
+        def valid_config_oauth
+          fixture_load("valid_refresh_token.yml")
         end
       end
     end

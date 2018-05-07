@@ -1,0 +1,18 @@
+in:
+  type: google_analytics
+  refresh_token: "your_refresh_token"
+  client_id: "your_client_id_here"
+  client_secret: "your_client_secret_here"
+  view_id: 101111111
+  time_series: "ga:dateHour"
+ 
+  dimensions:
+    - "ga:browser"
+  metrics:
+    - "ga:visits"
+    - "ga:pageviews"
+  retry_limit: 2
+  retry_initial_wait_sec: 0
+
+out:
+  type: stdout
