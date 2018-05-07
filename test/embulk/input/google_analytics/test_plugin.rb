@@ -202,12 +202,14 @@ module Embulk
 
               sub_test_case "last_record_time option" do
                 setup do
+                  stub(Plugin).calculate_next_times { {} }
                   Time.zone = "America/Los_Angeles"
                   @last_record_time = Time.zone.parse("2016-06-01 12:00:00").to_time
 
                   conf = valid_config["in"]
                   conf["time_series"] = time_series
                   conf["last_record_time"] = @last_record_time.strftime("%Y-%m-%d %H:%M:%S %z")
+                  conf['incremental'] = true
                   @plugin = Plugin.new(embulk_config(conf), nil, nil, @page_builder)
                 end
 
@@ -222,6 +224,7 @@ module Embulk
                       }
                       block.call row
                     end
+                    stub(klass).get_profile { {timezone: "America/Los_Angeles" } }
                   end
 
                   mock(@page_builder).add.never
@@ -259,12 +262,15 @@ module Embulk
 
               sub_test_case "last_record_time option" do
                 setup do
+                  stub(Plugin).calculate_next_times { {} }
                   Time.zone = "America/Los_Angeles"
                   @last_record_time = Time.zone.parse("2016-06-01 12:00:00").to_time
 
                   conf = valid_config["in"]
                   conf["time_series"] = time_series
                   conf["last_record_time"] = @last_record_time.strftime("%Y-%m-%d %H:%M:%S %z")
+                  conf['incremental'] = true
+
                   @plugin = Plugin.new(embulk_config(conf), nil, nil, @page_builder)
                 end
 
@@ -279,6 +285,7 @@ module Embulk
                       }
                       block.call row
                     end
+                    stub(klass).get_profile { {timezone: "America/Los_Angeles" } }
                   end
 
                   mock(@page_builder).add.never
@@ -286,6 +293,39 @@ module Embulk
                   @plugin.run
                 end
               end
+            end
+          end
+        end
+
+        sub_test_case "run non-incremental" do
+          sub_test_case " should be added to page_builder" do
+            setup do
+              Time.zone = "America/Los_Angeles"
+              @last_record_time = Time.zone.parse("2016-06-01 12:00:00").to_time
+
+              conf = valid_config["in"]
+              conf["time_series"] = "ga:date"
+              conf["last_record_time"] = @last_record_time.strftime("%Y-%m-%d %H:%M:%S %z")
+              conf['incremental'] = false
+              @plugin = Plugin.new(embulk_config(conf), nil, nil, @page_builder)
+            end
+
+            test "should allow record to be added to page_builder" do
+              any_instance_of(Client) do |klass|
+                stub(klass).each_report_row do |block|
+                  row = {
+                      "ga:date" => @last_record_time,
+                      "ga:browser" => "wget",
+                      "ga:visits" => 3,
+                      "ga:pageviews" => 4,
+                  }
+                  block.call row
+                end
+              end
+
+              mock(@page_builder).add(anything).at_least(1)
+              mock(@page_builder).finish
+              @plugin.run
             end
           end
         end
