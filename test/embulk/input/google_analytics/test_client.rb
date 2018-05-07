@@ -283,6 +283,60 @@ module Embulk
           end
         end
 
+        sub_test_case "oauth_refresh_token" do
+          setup do
+            conf = valid_config_oauth["in"]
+            mute_logger
+            @client = Client.new(task(embulk_config(conf)))
+          end
+
+          sub_test_case "retry refresh token" do
+            def should_retry
+              mock(Google::Auth::UserRefreshCredentials).new(anything).times(retryer.config.limit + 1) { raise error }
+              assert_raise do
+                @client.auth
+              end
+            end
+
+            def should_not_retry
+              mock(Google::Auth::UserRefreshCredentials).new(anything).times(1) { raise error }
+              assert_raise do
+                @client.auth
+              end
+            end
+
+            sub_test_case "Server respones error (5xx)" do
+              def error
+                Google::Apis::ServerError.new("error")
+              end
+
+              test "should retry refresh token" do
+                should_retry
+              end
+            end
+
+            sub_test_case "Refresh token reach Rate Limit" do
+              def error
+                Google::Apis::RateLimitError.new("error")
+              end
+
+              test "should retry refresh token" do
+                should_retry
+              end
+            end
+
+            sub_test_case "Refresh token Error" do
+              def error
+                Google::Apis::AuthorizationError.new("error")
+              end
+
+              test "should not retry" do
+                should_not_retry
+              end
+            end
+          end
+        end
+
         sub_test_case "too_early_data?" do
           def stub_timezone(client)
             stub(client).get_profile { {timezone: "America/Los_Angeles" } }
@@ -410,6 +464,10 @@ module Embulk
 
         def valid_config
           fixture_load("valid.yml")
+        end
+
+        def valid_config_oauth
+          fixture_load("valid_refresh_token.yml")
         end
 
         def embulk_config(hash)
