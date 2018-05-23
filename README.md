@@ -22,6 +22,12 @@ Embulk input plugin for Google Analytics reports.
 - **retry_limit**: Try to retry this times (integer, default: 5)
 - **retry_initial_wait_sec**: Wait seconds for exponential backoff initial value (integer, default: 2)
 
+### **New update from verions  0.1.18**
+Started from version 0.1.18, the Plugin also supports User Account Authentication along with Service Account Authentication see: [OAuth 2.0 for Server-side Web Application](https://developers.google.com/identity/protocols/OAuth2WebServer). Extra optional configuration keys ware added and the **json_key_content** is made optional 
+ - **client_id**: client_id for application (string, optional)
+ - **client_secret**: client_secret for application (string, optional)
+ - **refresh_token**: the refresh_token optained during exchange an authentication code (string, optional)
+
 ### Get View ID
 
 1. Go to the [Google Analytics sign in page](https://analytics.google.com/analytics/) and sign in.
@@ -95,6 +101,24 @@ in:
   end_date: "2016-06-28"
 ```
 
+## Config example using User Authentication
+```yaml
+ in:
+  type: google_analytics
+  client_id: "#############apps.googleusercontent.com"
+  client_secret: "##############QLxgrfis4"
+  refresh_token: "##########awWNT9lTeGq8weKE"
+  view_id: 123111111
+  time_series: "ga:dateHour" # hourly basis
+  dimensions:
+    - "ga:browser"
+  metrics:
+    - "ga:visits"
+    - "ga:pageviews"
+
+  start_date: "2016-06-27"
+  end_date: "2016-06-28"
+```
 
 ## Build
 
