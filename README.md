@@ -69,7 +69,7 @@ That means sometimes result will be unmatched with Google Analytics web interfac
 
 Currently a sampling level supported by this plugin is DEFAULT only. Let us know if you want to use other sampling level (SMALL or LARGE).
 
-## Example
+## Example using Service Account
 
 ```yaml
 in:
@@ -101,7 +101,7 @@ in:
   end_date: "2016-06-28"
 ```
 
-## Config example using User Authentication
+## Example using User Account
 ```yaml
  in:
   type: google_analytics
