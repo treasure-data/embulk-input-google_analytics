@@ -23,10 +23,10 @@ Embulk input plugin for Google Analytics reports.
 - **retry_initial_wait_sec**: Wait seconds for exponential backoff initial value (integer, default: 2)
 
 ### **New update from verions  0.1.18**
-Started from version 0.1.18, the Plugin also supports User Account Authentication along with Service Account Authentication see: [OAuth 2.0 for Server-side Web Application](https://developers.google.com/identity/protocols/OAuth2WebServer). Extra optional configuration keys ware added and the **json_key_content** is made optional 
+Started from version 0.1.18, the Plugin also supports User Account Authentication along with Service Account Authentication see: [OAuth 2.0 for Server-side Web Application](https://developers.google.com/identity/protocols/OAuth2WebServer). Extra optional configuration keys were added and the **json_key_content** is made optional 
  - **client_id**: client_id for application (string, optional)
  - **client_secret**: client_secret for application (string, optional)
- - **refresh_token**: the refresh_token optained during exchange an authentication code (string, optional)
+ - **refresh_token**: the refresh_token obtained during exchange authentication code (string, optional)
 
 ### Get View ID
 
