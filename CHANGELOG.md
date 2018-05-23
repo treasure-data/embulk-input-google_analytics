@@ -1,8 +1,12 @@
-#0.1.17 - 2018-04-16
+## 0.1.18 - 2018-05-23
+* Suport User Account Authentication [#33](https://github.com/treasure-data/embulk-input-google_analytics/pull/33)
+* Ignore last_record_time if non-incremental task [#34](https://github.com/treasure-data/embulk-input-google_analytics/pull/34)
+
+## 0.1.17 - 2018-04-16
 
 * Add more descriptive error message when Google API return invalid time format [#32](https://github.com/treasure-data/embulk-input-google_analytics/pull/32)
 
-#0.1.16 - 2018-02-06
+## 0.1.16 - 2018-02-06
 
 * Use user profile timezone when format next from_date [#31](https://github.com/treasure-data/embulk-input-google_analytics/pull/31)
 
