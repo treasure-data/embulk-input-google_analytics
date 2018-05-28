@@ -117,7 +117,7 @@ module Embulk
           client = Client.new(task, preview?)
           columns = self.class.columns_from_task(task) + ["view_id"]
 
-          last_record_time = task['incremental'] && task["last_record_time"] ? Time.parse(task["last_record_time"]) : nil
+          last_record_time = task['incremental'] && (task["last_record_time"] && !task["last_record_time"].empty?) ? Time.parse(task["last_record_time"]) : nil
 
           latest_time_series = nil
           skip_counter, total_counter = 0, 0
