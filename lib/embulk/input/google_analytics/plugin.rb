@@ -196,13 +196,19 @@ module Embulk
             task_report[:last_record_time] = fetched_latest_time.strftime("%Y-%m-%d %H:%M:%S %z")
           else
             # no records fetched, don't modify config_diff
-            task_report = {
-              start_date: task["start_date"],
-              end_date: task["end_date"],
-              last_record_time: task["last_record_time"],
-            }
+            if task["last_record_time"] && !task["last_record_time"].empty?
+              task_report = {
+                start_date: task["start_date"],
+                end_date: task["end_date"],
+                last_record_time: task["last_record_time"]
+              }
+            else
+              task_report = {
+                start_date: task["start_date"],
+                end_date: task["end_date"]
+              }
+            end
           end
-
           task_report
         end
       end

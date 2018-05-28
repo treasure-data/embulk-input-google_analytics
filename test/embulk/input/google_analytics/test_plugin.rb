@@ -365,7 +365,7 @@ module Embulk
                 expected = {
                   start_date: task["start_date"],
                   end_date: task["end_date"],
-                  last_record_time: task["last_record_time"],
+                  # last_record_time: task["last_record_time"],
                 }
                 assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
               end
@@ -441,7 +441,7 @@ module Embulk
                 expected = {
                   start_date: task["start_date"],
                   end_date: task["end_date"],
-                  last_record_time: task["last_record_time"],
+                  # last_record_time: task["last_record_time"],
                 }
                 assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
               end
