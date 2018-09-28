@@ -20,6 +20,10 @@ module Embulk
             unless task['client_id'] && task['client_secret'] && task['refresh_token']
               raise ConfigError.new("client_id, client_secret and refresh_token are required when using Oauth authentication")
             end
+          elsif task['auth_method'] == Plugin::AUTH_TYPE_JSON_KEY
+            if !valid_json?(task["json_key_content"])
+              raise ConfigError.new("json_key_content is not a valid JSON object")
+            end
           end
 
           columns_list = Client.new(task).get_columns_list
@@ -104,6 +108,19 @@ module Embulk
         def self.guess(config)
           Embulk.logger.warn "Don't needed to guess for this plugin"
           return {}
+        end
+
+        def self.valid_json?(json_object)
+          if !json_object.is_a? String
+              return false
+          elsif json_object == "null"
+              return false
+          end
+              JSON.parse(json_object)
+              return true
+          rescue JSON::ParserError => e
+              return false
+          return false
         end
 
         def init
