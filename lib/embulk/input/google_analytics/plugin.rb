@@ -111,16 +111,13 @@ module Embulk
         end
 
         def self.valid_json?(json_object)
-          if !json_object.is_a? String
-              return false
-          elsif json_object == "null"
+          if json_object == "null"
               return false
           end
-              JSON.parse(json_object)
+          JSON.parse(json_object)
               return true
           rescue JSON::ParserError => e
               return false
-          return false
         end
 
         def init

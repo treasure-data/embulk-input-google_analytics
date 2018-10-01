@@ -107,6 +107,26 @@ module Embulk
               end
             end
 
+            test "invalid json_key_content params for oauth" do
+              conf = valid_config["in"]
+              # Empty json_key_content
+              conf["json_key_content"] = ""
+              message = "json_key_content is not a valid JSON object"
+              assert_raise(Embulk::ConfigError.new(message)) do
+                Plugin.transaction(embulk_config(conf))
+              end
+              # null json_key_content
+              conf["json_key_content"] = "null"
+              assert_raise(Embulk::ConfigError.new(message)) do
+                Plugin.transaction(embulk_config(conf))
+              end
+              # Not a string json_key_content
+              conf["json_key_content"] = nil
+              assert_raise(Embulk::ConfigError.new(message)) do
+                Plugin.transaction(embulk_config(conf))
+              end
+            end
+
             def unknown_auth_method_message
               "Unknown Authentication method ''."
             end
