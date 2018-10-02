@@ -114,10 +114,12 @@ module Embulk
           if json_object == "null"
               return false
           end
-          JSON.parse(json_object)
-              return true
+          begin
+            JSON.parse(json_object)
+                return true
           rescue JSON::ParserError => e
               return false
+          end
         end
 
         def init
