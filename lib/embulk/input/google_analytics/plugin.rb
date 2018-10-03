@@ -111,8 +111,7 @@ module Embulk
         end
 
         def self.valid_json?(json_object)
-          # PLT-7625
-          # In some json library, 'null' string is a valid string for parse function
+          # 'null' string is a valid string for parse function
           # However in our case, json_content_key could not be 'null' therefore this check is added
           if json_object == "null"
               return false
@@ -126,7 +125,6 @@ module Embulk
         end
 
         def init
-          # PLT-6753
           if task["start_date"] && !task["end_date"]
             task["end_date"] = "today"
           end
