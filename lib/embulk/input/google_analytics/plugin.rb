@@ -20,6 +20,10 @@ module Embulk
             unless task['client_id'] && task['client_secret'] && task['refresh_token']
               raise ConfigError.new("client_id, client_secret and refresh_token are required when using Oauth authentication")
             end
+          elsif task['auth_method'] == Plugin::AUTH_TYPE_JSON_KEY
+            if !valid_json?(task["json_key_content"])
+              raise ConfigError.new("json_key_content is not a valid JSON object")
+            end
           end
 
           columns_list = Client.new(task).get_columns_list
@@ -106,8 +110,21 @@ module Embulk
           return {}
         end
 
+        def self.valid_json?(json_object)
+          # 'null' string is a valid string for parse function
+          # However in our case, json_content_key could not be 'null' therefore this check is added
+          if json_object == "null"
+              return false
+          end
+          begin
+            JSON.parse(json_object)
+                return true
+          rescue JSON::ParserError => e
+              return false
+          end
+        end
+
         def init
-          # PLT-6753
           if task["start_date"] && !task["end_date"]
             task["end_date"] = "today"
           end
