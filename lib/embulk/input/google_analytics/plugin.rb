@@ -111,6 +111,9 @@ module Embulk
         end
 
         def self.valid_json?(json_object)
+          # PLT-7625
+          # In some json library, 'null' string is a valid string for parse function
+          # However in our case, json_content_key could not be 'null' therefore this check is added
           if json_object == "null"
               return false
           end
