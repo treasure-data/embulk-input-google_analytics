@@ -1,3 +1,6 @@
+## 0.1.19 - 2018-10-03
+* Make it easy to understand error message of Google Analytics connector
+
 ## 0.1.18 - 2018-05-23
 * Suport User Account Authentication [#33](https://github.com/treasure-data/embulk-input-google_analytics/pull/33)
 * Ignore last_record_time if non-incremental task [#34](https://github.com/treasure-data/embulk-input-google_analytics/pull/34)
