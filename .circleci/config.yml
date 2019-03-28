@@ -9,8 +9,6 @@ jobs:
     working_directory: ~/workspace
     steps:
     - checkout
-    - run: ls
-    - run: pwd
     - setup_remote_docker: 
         docker_layer_caching: true 
     - restore_cache:
