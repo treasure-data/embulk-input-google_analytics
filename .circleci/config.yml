@@ -9,8 +9,6 @@ jobs:
     working_directory: ~/workspace
     steps:
     - checkout
-    - setup_remote_docker: 
-        docker_layer_caching: true 
     - restore_cache:
         keys:
           - deps-{{ .Environment.CIRCLE_JOB }}-{{ checksum "embulk-input-google_analytics.gemspec" }}
