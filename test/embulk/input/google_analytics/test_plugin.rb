@@ -379,13 +379,37 @@ module Embulk
               @config = embulk_config(conf)
             end
 
-            sub_test_case "no records fetched" do
+            sub_test_case "no records fetched and last_record_time is nil" do
               test "config_diff won't modify" do
                 plugin = Plugin.new(config, nil, nil, @page_builder)
                 expected = {
                   start_date: task["start_date"],
+                  end_date: task["end_date"]
+                }
+                assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
+              end
+            end
+
+            sub_test_case "no records fetched and last_record_time is empty" do
+              test "config_diff won't modify" do
+                config["last_record_time"] = ""
+                plugin = Plugin.new(config, nil, nil, @page_builder)
+                expected = {
+                  start_date: task["start_date"],
+                  end_date: task["end_date"]
+                }
+                assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
+              end
+            end
+
+            sub_test_case "no records fetched and last_record_time exist" do
+              test "config_diff won't modify" do
+                config["last_record_time"] = "2019-01-01"
+                plugin = Plugin.new(config, nil, nil, @page_builder)
+                expected = {
+                  start_date: task["start_date"],
                   end_date: task["end_date"],
-                  last_record_time: task["last_record_time"],
+                  last_record_time: task["last_record_time"]
                 }
                 assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
               end
@@ -452,6 +476,7 @@ module Embulk
             setup do
               conf = valid_config["in"]
               conf["time_series"] = "ga:date"
+              conf["last_record_time"] = "2019-01-01"
               @config = embulk_config(conf)
             end
 

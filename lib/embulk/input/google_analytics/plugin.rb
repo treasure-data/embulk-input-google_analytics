@@ -134,8 +134,7 @@ module Embulk
           client = Client.new(task, preview?)
           columns = self.class.columns_from_task(task) + ["view_id"]
 
-          last_record_time = task['incremental'] && task["last_record_time"] ? Time.parse(task["last_record_time"]) : nil
-
+          last_record_time = Time.parse(task["last_record_time"]) if task['incremental'] && !task["last_record_time"].nil? && !task["last_record_time"].empty?
           latest_time_series = nil
           skip_counter, total_counter = 0, 0
           client.each_report_row do |row|
@@ -215,11 +214,13 @@ module Embulk
             # no records fetched, don't modify config_diff
             task_report = {
               start_date: task["start_date"],
-              end_date: task["end_date"],
-              last_record_time: task["last_record_time"],
+              end_date: task["end_date"]
             }
+            # write last_record_time only when last_record_time is not nil and not empty
+            unless task["last_record_time"].nil? || task["last_record_time"].empty?
+              task_report[:last_record_time] = task["last_record_time"]
+            end 
           end
-
           task_report
         end
       end
