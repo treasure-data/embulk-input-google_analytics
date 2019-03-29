@@ -379,38 +379,23 @@ module Embulk
               @config = embulk_config(conf)
             end
 
-            sub_test_case "no records fetched and last_record_time is nil" do
-              test "config_diff won't modify" do
-                plugin = Plugin.new(config, nil, nil, @page_builder)
+            sub_test_case "no records fetched" do
+              data do
+              [
+                ["last_record_time is nil", [nil, nil]],
+                ["last_record_time is empty", ["", nil]],
+                ["last_record_time is blank", ["   ", nil]],
+                ["last_record_time is valid", ["2019-01-01", "2019-01-01"]]
+              ]
+              end
+              test "test calculate_next_times" do |(in_last_record_time, expected_last_record_time)|
+                config["last_record_time"] = in_last_record_time
                 expected = {
                   start_date: task["start_date"],
                   end_date: task["end_date"]
                 }
-                assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
-              end
-            end
-
-            sub_test_case "no records fetched and last_record_time is empty" do
-              test "config_diff won't modify" do
-                config["last_record_time"] = ""
+                expected[:last_record_time] = expected_last_record_time unless expected_last_record_time.blank?
                 plugin = Plugin.new(config, nil, nil, @page_builder)
-                expected = {
-                  start_date: task["start_date"],
-                  end_date: task["end_date"]
-                }
-                assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
-              end
-            end
-
-            sub_test_case "no records fetched and last_record_time exist" do
-              test "config_diff won't modify" do
-                config["last_record_time"] = "2019-01-01"
-                plugin = Plugin.new(config, nil, nil, @page_builder)
-                expected = {
-                  start_date: task["start_date"],
-                  end_date: task["end_date"],
-                  last_record_time: task["last_record_time"]
-                }
                 assert_equal expected, plugin.calculate_next_times(DEFAULT_TIMEZONE, nil)
               end
             end
