@@ -1,4 +1,4 @@
-## 0.1.20 - 2019-04-01
+## 0.1.21 - 2019-04-01
 * Fix **(ArgumentError) no time information in ""** when last_record_time is null [#42](https://github.com/treasure-data/embulk-input-google_analytics/pull/42)
 
 ## 0.1.19 - 2018-10-03
