@@ -31,7 +31,7 @@ module Embulk
             report = result.to_h[:reports].first
 
             if !report[:data].has_key?(:rows)
-              Embulk.logger.warn "Result doesn't contain rows."
+              Embulk.logger.warn "Result doesn't contain rows: #{result}"
               break
             end
 
