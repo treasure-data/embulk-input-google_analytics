@@ -12,8 +12,8 @@ module Embulk
 
         def self.transaction(config, &control)
           task = task_from_config(config)
-          unless %w(ga:date ga:dateHour ga:yearMonth).include?(task["time_series"])
-            raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour', 'ga:date' or 'ga:yearMonth'")
+          unless %w(ga:date ga:dateHour ga:yearMonth ga:year).include?(task["time_series"])
+            raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour', 'ga:date', 'ga:year' or 'ga:yearMonth'")
           end
 
           raise ConfigError.new("Unknown Authentication method '#{task['auth_method']}'.") unless task['auth_method']

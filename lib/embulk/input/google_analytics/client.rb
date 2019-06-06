@@ -104,7 +104,9 @@ module Embulk
             when "ga:date"
               "%Y%m%d"
             when "ga:yearMonth"
-              "%Y%m"
+              "%Y%m01"
+            when "ga:year"
+              "%Y0101"
             end
           parts = Date._strptime(time_string, date_format)
           unless parts
@@ -266,6 +268,8 @@ module Embulk
               time_str.to_i >= now.strftime("%Y%m%d").to_i
             when "ga:yearMonth"
               time_str.to_i >= now.strftime("%Y%m").to_i
+            when "ga:year"
+              time_str.to_i >= now.strftime("%Y").to_i
             end
           end
         end
