@@ -30,7 +30,7 @@ module Embulk
 
           columns = columns_from_task(task).map do |col_name|
             col_info = columns_list.find{|col| col[:id] == col_name}
-            raise ConfigError.new("Unknown metric/dimension '#{col_name}'") unless col_info
+            # raise ConfigError.new("Unknown metric/dimension '#{col_name}'") unless col_info
 
             col_type =
               if col_info[:attributes]
