@@ -183,7 +183,7 @@ module Embulk
 
         def calculate_next_times(client_time_zone, raw_fetched_latest_time)
           fetched_latest_time = case task["time_series"]
-                                when "year", "yearMonth"
+                                when "ga:year", "ga:yearMonth"
                                   parts = [*raw_fetched_latest_time.split('-'), 1, 1].first(3)
                                   Time.zone.local(*parts).to_time
                                 else
