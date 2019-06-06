@@ -1,3 +1,5 @@
+require 'uri'
+
 module Embulk
   module Input
     module GoogleAnalytics
