@@ -103,6 +103,8 @@ module Embulk
               "%Y%m%d%H"
             when "ga:date"
               "%Y%m%d"
+            when "ga:yearMonth"
+              "%Y%m"
             end
           parts = Date._strptime(time_string, date_format)
           unless parts
@@ -186,6 +188,7 @@ module Embulk
             metrics: task["metrics"].map{|m| {expression: m}},
             include_empty_rows: true,
             page_size: preview? ? 10 : 10000,
+            filters: task["filters"],
           }
 
           if task["start_date"] || task["end_date"]
@@ -246,6 +249,8 @@ module Embulk
               time_str.to_i >= now.strftime("%Y%m%d%H").to_i
             when "ga:date"
               time_str.to_i >= now.strftime("%Y%m%d").to_i
+            when "ga:yearMonth"
+              time_str.to_i >= now.strftime("%Y%m").to_i
             end
           end
         end

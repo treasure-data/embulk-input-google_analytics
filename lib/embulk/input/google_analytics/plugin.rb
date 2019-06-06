@@ -10,8 +10,8 @@ module Embulk
 
         def self.transaction(config, &control)
           task = task_from_config(config)
-          unless %w(ga:date ga:dateHour).include?(task["time_series"])
-            raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour' or 'ga:date'")
+          unless %w(ga:date ga:dateHour ga:yearMonth).include?(task["time_series"])
+            raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour', 'ga:date' or 'ga:yearMonth'")
           end
 
           raise ConfigError.new("Unknown Authentication method '#{task['auth_method']}'.") unless task['auth_method']
@@ -82,6 +82,7 @@ module Embulk
             "view_id" => config.param("view_id", :string),
             "dimensions" => config.param("dimensions", :array, default: []),
             "metrics" => config.param("metrics", :array, default: []),
+            "filters" => config.param("filters", :array, default: []),
             "time_series" => config.param("time_series", :string),
             "start_date" => config.param("start_date", :string, default: nil),
             "end_date" => config.param("end_date", :string, default: nil),
