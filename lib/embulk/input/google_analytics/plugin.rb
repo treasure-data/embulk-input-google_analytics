@@ -84,6 +84,7 @@ module Embulk
             "metrics" => config.param("metrics", :array, default: []),
             "metric_filters" => config.param("metric_filters", :array, default: []),
             "dimension_filters" => config.param("dimension_filters", :array, default: []),
+            "segment_filters" => config.param("segment_filters", :array, default: []),
             "time_series" => config.param("time_series", :string),
             "start_date" => config.param("start_date", :string, default: nil),
             "end_date" => config.param("end_date", :string, default: nil),
