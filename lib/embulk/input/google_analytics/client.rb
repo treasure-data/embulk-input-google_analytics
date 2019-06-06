@@ -211,7 +211,7 @@ module Embulk
         def deeply_symbolyze_keys(val)
           case val
           when Array
-            val.map(&:deeply_symbolyze_keys)
+            val.map{|v| deeply_symbolyze_keys(v) }
           when Hash
             val.map{|k,v| [k.to_sym, deeply_symbolyze_keys(v)]}.to_h
           else
