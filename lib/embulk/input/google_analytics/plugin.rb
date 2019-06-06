@@ -185,7 +185,7 @@ module Embulk
           fetched_latest_time = case task["time_series"]
                                 when "ga:year", "ga:yearMonth"
                                   parts = [*raw_fetched_latest_time.split('-'), 1, 1].first(3)
-                                  Time.zone.local(*parts).to_time
+                                  Time.new(*parts).to_time
                                 else
                                   raw_fetched_latest_time
                                 end
