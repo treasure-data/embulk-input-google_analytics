@@ -104,9 +104,9 @@ module Embulk
             when "ga:date"
               "%Y%m%d"
             when "ga:yearMonth"
-              "%Y%m01"
+              "%Y%m"
             when "ga:year"
-              "%Y0101"
+              "%Y"
             end
           parts = Date._strptime(time_string, date_format)
           unless parts
@@ -115,7 +115,12 @@ module Embulk
           end
 
           swap_time_zone do
-            Time.zone.local(*parts.values_at(:year, :mon, :mday, :hour)).to_time
+            case task["time_series"]
+            when "ga:year", "ga:yearMonth"
+              Time.zone.local(parts[:year], parts[:mon] || 1, 1).to_time
+            else
+              Time.zone.local(*parts.values_at(:year, :mon, :mday, :hour)).to_time
+            end
           end
         end
 
