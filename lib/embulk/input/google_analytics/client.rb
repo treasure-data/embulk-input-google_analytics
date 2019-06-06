@@ -188,7 +188,9 @@ module Embulk
             metrics: task["metrics"].map{|m| {expression: m}},
             include_empty_rows: true,
             page_size: preview? ? 10 : 10000,
-            filters: task["filters"],
+            metric_filter_clauses: [{filters: task["metric_filters"]}],
+            dimension_filter_clauses: [{filters: task["dimension_filters"]}],
+            sampling_level: task["sampling"],
           }
 
           if task["start_date"] || task["end_date"]

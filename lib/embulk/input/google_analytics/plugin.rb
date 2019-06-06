@@ -82,7 +82,8 @@ module Embulk
             "view_id" => config.param("view_id", :string),
             "dimensions" => config.param("dimensions", :array, default: []),
             "metrics" => config.param("metrics", :array, default: []),
-            "filters" => config.param("filters", :array, default: []),
+            "metric_filters" => config.param("metric_filters", :array, default: []),
+            "dimension_filters" => config.param("dimension_filters", :array, default: []),
             "time_series" => config.param("time_series", :string),
             "start_date" => config.param("start_date", :string, default: nil),
             "end_date" => config.param("end_date", :string, default: nil),
@@ -90,6 +91,7 @@ module Embulk
             "last_record_time" => config.param("last_record_time", :string, default: nil),
             "retry_limit" => config.param("retry_limit", :integer, default: 5),
             "retry_initial_wait_sec" => config.param("retry_initial_wait_sec", :integer, default: 2),
+            "sampling_level" => config.param("sampling", :string, default: "DEFAULT"),
           }
         end
 
