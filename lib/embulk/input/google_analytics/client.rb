@@ -188,9 +188,9 @@ module Embulk
             metrics: task["metrics"].map{|m| {expression: m}},
             include_empty_rows: true,
             page_size: preview? ? 10 : 10000,
-            metric_filter_clauses: [{ filters: task["metric_filters"].map(&:symbolize_keys) }],
-            dimension_filter_clauses: [{ filters: task["dimension_filters"].map(&:symbolize_keys) }],
-            segments: task["segments"].map(&:symbolize_keys),
+            metric_filter_clauses: [{ filters: deeply_symbolyze_keys(task["metric_filters"]) }],
+            dimension_filter_clauses: [{ filters: deeply_symbolyze_keys(task["dimension_filters"]) }],
+            segments: deeply_symbolyze_keys(task["segments"]),
             sampling_level: task["sampling"],
           }
 
@@ -206,6 +206,17 @@ module Embulk
           end
 
           [query]
+        end
+
+        def deeply_symbolyze_keys(val)
+          case val
+          when Array
+            val.map(&:deeply_symbolyze_keys)
+          when Hash
+            val.map{|k,v| [k.to_sym, deeply_symbolyze_keys(v)]}.to_h
+          else
+            val
+          end
         end
 
         def view_id
