@@ -188,8 +188,24 @@ module Embulk
             metrics: task["metrics"].map{|m| {expression: m}},
             include_empty_rows: true,
             page_size: preview? ? 10 : 10000,
-            metric_filter_clauses: [{filters: task["metric_filters"]}],
-            dimension_filter_clauses: [{filters: task["dimension_filters"]}],
+            metric_filter_clauses: [{
+              filters: task["metric_filters"].map{|f|
+                {
+                  metric_value: f["metric_value"],
+                  operator: f["operator"],
+                  comparison_value: f["comparison_value"],
+                }
+              }
+            }],
+            dimension_filter_clauses: [{
+              filters: task["dimension_filters"].map{|f|
+                {
+                  metric_value: f["metric_value"],
+                  operator: f["operator"],
+                  comparison_value: f["comparison_value"],
+                }
+              }
+            }],
             sampling_level: task["sampling"],
           }
 

@@ -91,7 +91,7 @@ module Embulk
             "last_record_time" => config.param("last_record_time", :string, default: nil),
             "retry_limit" => config.param("retry_limit", :integer, default: 5),
             "retry_initial_wait_sec" => config.param("retry_initial_wait_sec", :integer, default: 2),
-            "sampling_level" => config.param("sampling", :string, default: "DEFAULT"),
+            "sampling" => config.param("sampling", :string, default: "DEFAULT"),
           }
         end
 
