@@ -181,7 +181,14 @@ module Embulk
           false
         end
 
-        def calculate_next_times(client_time_zone, fetched_latest_time)
+        def calculate_next_times(client_time_zone, raw_fetched_latest_time)
+          fetched_latest_time = case task["time_series"]
+                                when "year", "yearMonth"
+                                  parts = [*raw_fetched_latest_time.split('-'), 1, 1].first(3)
+                                  Time.zone.local(*parts).to_time
+                                else
+                                  raw_fetched_latest_time
+                                end
           task_report = {}
           if fetched_latest_time
             # Convert fetched_last_time to user timezone
