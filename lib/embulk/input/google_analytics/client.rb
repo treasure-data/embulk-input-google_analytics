@@ -190,7 +190,7 @@ module Embulk
             page_size: preview? ? 10 : 10000,
             metric_filter_clauses: [{ filters: task["metric_filters"].map(&:symbolize_keys) }],
             dimension_filter_clauses: [{ filters: task["dimension_filters"].map(&:symbolize_keys) }],
-            segment_filters:[{ task["segment_filters"].map(&:symbolize_keys) }],
+            segment_filters: task["segment_filters"].map(&:symbolize_keys),
             sampling_level: task["sampling"],
           }
 
