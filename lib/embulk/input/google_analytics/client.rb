@@ -189,22 +189,10 @@ module Embulk
             include_empty_rows: true,
             page_size: preview? ? 10 : 10000,
             metric_filter_clauses: [{
-              filters: task["metric_filters"].map{|f|
-                {
-                  metric_value: f["metric_value"],
-                  operator: f["operator"],
-                  comparison_value: f["comparison_value"],
-                }
-              }
+              filters: task["metric_filters"].map{|f| f.symbolize_keys }
             }],
             dimension_filter_clauses: [{
-              filters: task["dimension_filters"].map{|f|
-                {
-                  metric_value: f["metric_value"],
-                  operator: f["operator"],
-                  comparison_value: f["comparison_value"],
-                }
-              }
+              filters: task["dimension_filters"].map{|f| f.symbolize_keys }
             }],
             sampling_level: task["sampling"],
           }
