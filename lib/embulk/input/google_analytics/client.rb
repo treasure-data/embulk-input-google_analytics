@@ -117,7 +117,7 @@ module Embulk
           swap_time_zone do
             case task["time_series"]
             when "ga:year", "ga:yearMonth"
-              Time.new(parts[:year], parts[:mon] || 1, 1)).to_time
+              Time.new(parts[:year], parts[:mon] || 1, 1).to_time
             else
               Time.new(*parts.values_at(:year, :mon, :mday, :hour)).to_time
             end
