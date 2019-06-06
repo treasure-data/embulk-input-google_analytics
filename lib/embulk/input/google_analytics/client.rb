@@ -191,6 +191,7 @@ module Embulk
             metric_filter_clauses: [{ filters: deeply_symbolyze_keys(task["metric_filters"]) }],
             dimension_filter_clauses: [{ filters: deeply_symbolyze_keys(task["dimension_filters"]) }],
             segments: deeply_symbolyze_keys(task["segments"]),
+            filters_expression: task["filters_expression"],
             sampling_level: task["sampling"],
           }
 
