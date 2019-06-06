@@ -191,7 +191,7 @@ module Embulk
             metric_filter_clauses: [{ filters: deeply_symbolyze_keys(task["metric_filters"]) }],
             dimension_filter_clauses: [{ filters: deeply_symbolyze_keys(task["dimension_filters"]) }],
             segments: deeply_symbolyze_keys(task["segments"]),
-            filters_expression: task["filters_expression"] ? URI::encode(task["filters_expression"]) : nil,
+            filters_expression: task["filters_expression"] ? URI::encode(task["filters_expression"]).gsub('=', "%3D") : nil,
             sampling_level: task["sampling"],
           }
 
