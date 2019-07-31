@@ -30,6 +30,10 @@ module Embulk
             result = get_reports(page_token)
             report = result.to_h[:reports].first
 
+            if ENV["DEBUG"].to_i == 1
+              Embulk.logger.warn "Got response: #{result.to_h}"
+            end
+
             if !report[:data].has_key?(:rows)
               Embulk.logger.warn "Result doesn't contain rows: #{result.to_h}"
               break
