@@ -1,7 +1,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "embulk-input-google_analytics"
-	spec.version       = "0.1.21"
+	spec.version       = "0.1.22"
   spec.authors       = ["uu59"]
   spec.summary       = "Google Analytics input plugin for Embulk"
   spec.description   = "Loads records from Google Analytics."
@@ -15,8 +15,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "httpclient"
   spec.add_dependency "google-api-client", "0.10.1"
-  spec.add_dependency "signet"
-  spec.add_dependency "activesupport" # for Time.zone.parse, Time.zone.now
+  spec.add_dependency "signet", "0.11.0"
+  spec.add_dependency "activesupport", "5.2.3" # for Time.zone.parse, Time.zone.now
   spec.add_dependency "perfect_retry", "~> 0.5"
 
   spec.add_development_dependency 'embulk', ['>= 0.8.9']
