@@ -1,7 +1,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "embulk-input-google_analytics"
-	spec.version       = "0.1.22"
+	spec.version       = "0.1.23"
   spec.authors       = ["uu59"]
   spec.summary       = "Google Analytics input plugin for Embulk"
   spec.description   = "Loads records from Google Analytics."
@@ -19,8 +19,8 @@ Gem::Specification.new do |spec|
   # activesupport version > 5.2.3 requires Ruby version >= 2.5
   # Current embulk version 0.9.19 runs under jRuby 9.1.x (which is compatible with Ruby 2.3)
   # So decide to lock these gem versions to prevent incompatible Ruby version
-  spec.add_dependency "signet", "0.11.0"
-  spec.add_dependency "activesupport", "5.2.3" # for Time.zone.parse, Time.zone.now
+  spec.add_dependency "signet", "<= 0.11.0"
+  spec.add_dependency "activesupport", "<= 5.2.3" # for Time.zone.parse, Time.zone.now
 
   spec.add_dependency "perfect_retry", "~> 0.5"
 

@@ -1,3 +1,6 @@
+## 0.1.23 - 2019-10-24
+Lock signet and activesupport by less than or equal locked version [#45](https://github.com/treasure-data/embulk-input-google_analytics/pull/45)
+
 ## 0.1.22 - 2019-10-24
 * Fix **Plugin's dependencies require Ruby > 2.3** [#44](https://github.com/treasure-data/embulk-input-google_analytics/pull/44)
 
