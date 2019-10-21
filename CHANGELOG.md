@@ -1,3 +1,6 @@
+## 0.1.22 - 2019-10-24
+* Fix **Plugin's dependencies require Ruby > 2.3** [#44](https://github.com/treasure-data/embulk-input-google_analytics/pull/44)
+
 ## 0.1.21 - 2019-04-01
 * Fix **(ArgumentError) no time information in ""** when last_record_time is null [#42](https://github.com/treasure-data/embulk-input-google_analytics/pull/42)
 
