@@ -75,7 +75,7 @@ module Embulk
         end
 
         def get_all_profiles
-          service = Google::Apis::AnalyticsV3::AnalyticsService.new
+          service = Google::Apis::AnalyticsV3::AnalyticsService.new 　# TODO: weida check here
           service.authorization = auth
 
           Embulk.logger.debug "Fetching profile from API"
@@ -256,7 +256,7 @@ module Embulk
             # https://developers.google.com/analytics/devguides/reporting/core/v4/limits-quotas#additional_quota
             # https://github.com/google/google-api-ruby-client/blob/master/lib/google/apis/errors.rb
             # https://github.com/google/google-api-ruby-client/blob/0.9.11/lib/google/apis/core/http_command.rb#L33
-            config.rescues = Google::Apis::Core::HttpCommand::RETRIABLE_ERRORS
+            config.rescues = Google::Apis::Core::HttpCommand::RETRIABLE_ERRORS　# TODO: weida check here
             config.dont_rescues = [Embulk::DataError, Embulk::ConfigError]
             config.sleep = lambda{|n| task["retry_initial_wait_sec"]* (2 ** (n-1)) }
             config.raise_original_error = true

@@ -1,7 +1,7 @@
 require "bundler/gem_tasks"
 require "gem_release_helper/tasks"
 
-task default: :test
+task default: :test # TODO: weida default and use [rake] to build 
 
 desc "Run tests"
 task :test do
@@ -18,4 +18,3 @@ GemReleaseHelper::Tasks.install({
   gemspec: "./embulk-input-google_analytics.gemspec",
   github_name: "treasure-data/embulk-input-google_analytics",
 })
-
