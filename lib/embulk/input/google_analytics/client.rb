@@ -3,10 +3,6 @@ require "active_support/core_ext/time"
 require "google/apis/analyticsreporting_v4"
 require "google/apis/analytics_v3"
 
-# Avoid such error:
-# PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
-Google::Apis::ClientOptions.default.use_net_http = true
-
 module Embulk
   module Input
     module GoogleAnalytics
