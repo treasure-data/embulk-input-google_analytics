@@ -4,5 +4,3 @@
 /.bundle/
 /Gemfile.lock
 /coverage/
-/vendor/
-/config.*
