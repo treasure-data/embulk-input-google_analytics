@@ -1,7 +1,7 @@
 require "bundler/gem_tasks"
 require "gem_release_helper/tasks"
 
-task default: :test # TODO: weida default and use [rake] to build 
+task default: :test
 
 desc "Run tests"
 task :test do

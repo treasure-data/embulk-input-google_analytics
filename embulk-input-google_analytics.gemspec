@@ -14,13 +14,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "httpclient"
-  # spec.add_dependency "google-api-client", "0.10.1" # TODO: weida check here
   spec.add_dependency "google-api-client", [">= 0.11", "< 0.33.0"]
   # signet version > 11.0 requires Ruby version >= 2.4
   # activesupport version > 5.2.3 requires Ruby version >= 2.5
   # Current embulk version 0.9.19 runs under jRuby 9.1.x (which is compatible with Ruby 2.3)
   # So decide to lock these gem versions to prevent incompatible Ruby version
-  spec.add_dependency "signet", "<= 0.11.0" # TODO: weida check here
+  spec.add_dependency "signet", "<= 0.11.0"
   # spec.add_dependency "signet", ['< 0.12.0', '~> 0.7']
   spec.add_dependency "activesupport", "<= 5.2.3" # for Time.zone.parse, Time.zone.now
 
