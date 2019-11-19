@@ -18,4 +18,3 @@ GemReleaseHelper::Tasks.install({
   gemspec: "./embulk-input-google_analytics.gemspec",
   github_name: "treasure-data/embulk-input-google_analytics",
 })
-

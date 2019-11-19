@@ -23,7 +23,7 @@ Embulk input plugin for Google Analytics reports.
 - **retry_initial_wait_sec**: Wait seconds for exponential backoff initial value (integer, default: 2)
 
 ### **New update from verions  0.1.18**
-Started from version 0.1.18, the Plugin also supports User Account Authentication along with Service Account Authentication see: [OAuth 2.0 for Server-side Web Application](https://developers.google.com/identity/protocols/OAuth2WebServer). Extra optional configuration keys were added and the **json_key_content** is made optional 
+Started from version 0.1.18, the Plugin also supports User Account Authentication along with Service Account Authentication see: [OAuth 2.0 for Server-side Web Application](https://developers.google.com/identity/protocols/OAuth2WebServer). Extra optional configuration keys were added and the **json_key_content** is made optional
  - **client_id**: client_id for application (string, optional)
  - **client_secret**: client_secret for application (string, optional)
  - **refresh_token**: the refresh_token obtained during exchange authentication code (string, optional)
@@ -45,13 +45,13 @@ You need a service account on Google.
 select a project.</li>
   <li>Click <b>Create service account</b>.</li>
   <li>
-    
+
     In the <b>Create service account</b> window, type a name for the service
     account, and select <b>Furnish a new private key</b>. If you want to
     <a href="https://developers.google.com/identity/protocols/OAuth2ServiceAccount#delegatingauthority">grant
     Google Apps domain-wide authority</a> to the service account, also select
     <b>Enable Google Apps Domain-wide Delegation</b>.
-    
+
     Then click <b>Create</b>.</li>
 </ol>
 From: <https://developers.google.com/identity/protocols/OAuth2ServiceAccount>
@@ -89,7 +89,7 @@ in:
     }
   view_id: 123111111
   time_series: "ga:dateHour" # hourly basis
- 
+
   # https://developers.google.com/analytics/devguides/reporting/core/dimsmets
   dimensions:
     - "ga:browser"
@@ -123,5 +123,5 @@ in:
 ## Build
 
 ```
-$ rake
+$ rake build
 ```
