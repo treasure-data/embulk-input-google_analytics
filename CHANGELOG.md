@@ -1,3 +1,7 @@
+## 0.1.24 - 2020-07-14
+Upgrade version of gems to be compatible with other google input plugins [#46](https://github.com/treasure-data/embulk-input-google_analytics/pull/46)
+Release version 0.1.24 https://github.com/treasure-data/embulk-input-google_analytics/commit/3aef789a672227ae3ad9b58235091d34c96a4b67
+
 ## 0.1.23 - 2019-10-24
 Lock signet and activesupport by less than or equal locked version [#45](https://github.com/treasure-data/embulk-input-google_analytics/pull/45)
 
