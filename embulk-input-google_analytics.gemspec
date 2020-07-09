@@ -1,7 +1,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "embulk-input-google_analytics"
-	spec.version       = "0.1.23"
+	spec.version       = "0.1.24"
   spec.authors       = ["uu59"]
   spec.summary       = "Google Analytics input plugin for Embulk"
   spec.description   = "Loads records from Google Analytics."
@@ -29,7 +29,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', ['>= 10.0']
   spec.add_development_dependency 'test-unit', ['< 3.2']
   spec.add_development_dependency 'test-unit-rr'
-  spec.add_development_dependency 'simplecov'
+  # Lock simple cov and simplecov-html to prevent downloaded newer version which require ruby >= 2.4
+  # Current embulk version 0.9.19 runs under jRuby 9.1.x (which is compatible with Ruby 2.3)
+  spec.add_development_dependency 'simplecov', ['<= 0.12.0']
+  spec.add_development_dependency 'simplecov-html', ['<= 0.12.0']
   spec.add_development_dependency "codeclimate-test-reporter"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "gem_release_helper", "~> 1.0"
