@@ -27,7 +27,7 @@ module Embulk
             report = result.to_h[:reports].first
 
             if !report[:data].has_key?(:rows)
-              Embulk.logger.warn "Result doesn't contain rows."
+              Embulk.logger.warn "Result doesn't contain rows: #{result.to_h}"
               break
             end
 
@@ -99,6 +99,10 @@ module Embulk
               "%Y%m%d%H"
             when "ga:date"
               "%Y%m%d"
+            when "ga:yearMonth"
+              "%Y%m"
+            when "ga:year"
+              "%Y"
             end
           parts = Date._strptime(time_string, date_format)
           unless parts
@@ -107,7 +111,12 @@ module Embulk
           end
 
           swap_time_zone do
-            Time.zone.local(*parts.values_at(:year, :mon, :mday, :hour)).to_time
+            case task["time_series"]
+            when "ga:year", "ga:yearMonth"
+              Time.utc(parts[:year], parts[:mon] || 1, 1).to_time
+            else
+              Time.utc(*parts.values_at(:year, :mon, :mday, :hour)).to_time
+            end
           end
         end
 
@@ -182,6 +191,11 @@ module Embulk
             metrics: task["metrics"].map{|m| {expression: m}},
             include_empty_rows: true,
             page_size: preview? ? 10 : 10000,
+            metric_filter_clauses: [{ filters: deeply_symbolyze_keys(task["metric_filters"]) }],
+            dimension_filter_clauses: [{ filters: deeply_symbolyze_keys(task["dimension_filters"]) }],
+            segments: deeply_symbolyze_keys(task["segments"]),
+            filters_expression: task["filters_expression"],
+            sampling_level: task["sampling"],
           }
 
           if task["start_date"] || task["end_date"]
@@ -196,6 +210,17 @@ module Embulk
           end
 
           [query]
+        end
+
+        def deeply_symbolyze_keys(val)
+          case val
+          when Array
+            val.map{|v| deeply_symbolyze_keys(v) }
+          when Hash
+            val.map{|k,v| [k.to_sym, deeply_symbolyze_keys(v)]}.to_h
+          else
+            val
+          end
         end
 
         def view_id
@@ -242,6 +267,10 @@ module Embulk
               time_str.to_i >= now.strftime("%Y%m%d%H").to_i
             when "ga:date"
               time_str.to_i >= now.strftime("%Y%m%d").to_i
+            when "ga:yearMonth"
+              time_str.to_i >= now.strftime("%Y%m").to_i
+            when "ga:year"
+              time_str.to_i >= now.strftime("%Y").to_i
             end
           end
         end

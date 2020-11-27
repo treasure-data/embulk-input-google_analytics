@@ -1,3 +1,5 @@
+require 'uri'
+
 module Embulk
   module Input
     module GoogleAnalytics
@@ -10,8 +12,8 @@ module Embulk
 
         def self.transaction(config, &control)
           task = task_from_config(config)
-          unless %w(ga:date ga:dateHour).include?(task["time_series"])
-            raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour' or 'ga:date'")
+          unless %w(ga:date ga:dateHour ga:yearMonth ga:year).include?(task["time_series"])
+            raise ConfigError.new("Unknown time_series '#{task["time_series"]}'. Use 'ga:dateHour', 'ga:date', 'ga:year' or 'ga:yearMonth'")
           end
 
           raise ConfigError.new("Unknown Authentication method '#{task['auth_method']}'.") unless task['auth_method']
@@ -29,8 +31,8 @@ module Embulk
           columns_list = Client.new(task).get_columns_list
 
           columns = columns_from_task(task).map do |col_name|
-            col_info = columns_list.find{|col| col[:id] == col_name}
-            raise ConfigError.new("Unknown metric/dimension '#{col_name}'") unless col_info
+            col_info = columns_list.find{|col| col[:id] == col_name} || {}
+            # raise ConfigError.new("Unknown metric/dimension '#{col_name}'") unless col_info
 
             col_type =
               if col_info[:attributes]
@@ -82,6 +84,10 @@ module Embulk
             "view_id" => config.param("view_id", :string),
             "dimensions" => config.param("dimensions", :array, default: []),
             "metrics" => config.param("metrics", :array, default: []),
+            "metric_filters" => config.param("metric_filters", :array, default: []),
+            "dimension_filters" => config.param("dimension_filters", :array, default: []),
+            "segments" => config.param("segments", :array, default: []),
+            "filters_expression" => config.param("filters_expression", :string, default: nil),
             "time_series" => config.param("time_series", :string),
             "start_date" => config.param("start_date", :string, default: nil),
             "end_date" => config.param("end_date", :string, default: nil),
@@ -89,6 +95,7 @@ module Embulk
             "last_record_time" => config.param("last_record_time", :string, default: nil),
             "retry_limit" => config.param("retry_limit", :integer, default: 5),
             "retry_initial_wait_sec" => config.param("retry_initial_wait_sec", :integer, default: 2),
+            "sampling" => config.param("sampling", :string, default: "DEFAULT"),
           }
         end
 
