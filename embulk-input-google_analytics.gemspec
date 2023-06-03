@@ -17,10 +17,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency "google-api-client", [">= 0.11", "< 0.33.0"]
   # signet version > 11.0 requires Ruby version >= 2.4
   # activesupport version > 5.2.3 requires Ruby version >= 2.5
+  # representable veresion > 3.1.0 requires Ruby version >= 2.4
   # Current embulk version 0.9.19 runs under jRuby 9.1.x (which is compatible with Ruby 2.3)
   # So decide to lock these gem versions to prevent incompatible Ruby version
   spec.add_dependency "signet", ['~> 0.7', "< 0.11.0"]
   spec.add_dependency "activesupport", "<= 5.2.3" # for Time.zone.parse, Time.zone.now
+  spec.add_dependency "representable", ['~> 3.0.0', '< 3.1']
 
   spec.add_dependency "perfect_retry", "~> 0.5"
 
